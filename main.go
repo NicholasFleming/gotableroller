@@ -11,6 +11,15 @@ import (
 	"time"
 )
 
+/* TODO
+Add Maze rats md to use for examples and dev since its creative commons
+rename project to markdownTableRoller
+handle number ranges eg 1-4, 5-6 for varying probabilities, probably with table syntax
+handle tables with same name in multiple directories
+work on windows
+if [subtable] is not found just print [subtable]
+*/
+
 func main() {
 	args := os.Args
 
@@ -71,7 +80,7 @@ func parseTableValues(tableFile *os.File) ([]string, error) {
 		isValue := matcher.Match([]byte(scanner.Text()))
 		if isValue {
 			noPrefix := matcher.ReplaceAllString(scanner.Text(), "")
-
+			// TODO Do this after the result is picked to avoid extra work
 			str := checkForSubQueries(noPrefix)
 
 			tableValues = append(tableValues, str)
