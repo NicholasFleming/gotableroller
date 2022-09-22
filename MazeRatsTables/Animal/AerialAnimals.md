@@ -1,0 +1,36 @@
+* Albatross
+* Bat
+* Beetle
+* Bird of Paradise
+* Butterfly
+* Condor
+* Crane
+* Crow
+* Dragonfly
+* Eagle
+* Falcon
+* Firefly
+* Flamingo
+* Fly
+* Flying Squirrel
+* Goose
+* Gull
+* Hummingbird
+* Kingfisher
+* Locust
+* Magpie
+* Mantris
+* Mockingbird
+* Mosquito
+* Moth
+* Owl
+* Parrot
+* Peacock
+* Pelican
+* Pteranodon
+* Rooster
+* Sparrow
+* Swan
+* Vulture
+* Wasp
+* Woodpecker

@@ -1,0 +1,37 @@
+
+* Apprehend
+* Assassinate
+* Blackmail
+* Burgle
+* Chart
+* Convince
+* Deface
+* Defraud
+* Deliver
+* Destroy
+* Discredit
+* Escort
+* Exfiltrate
+* Extort
+* Follow
+* France
+* Impersonate
+* Impress
+* Imfiltrate
+* Interrogate
+* Investigate
+* Kidnap
+* Locate
+* Plant
+* Protect
+* Raid
+* Replace
+* Retrieve
+* Rob
+* Ruin
+* Sabotage
+* Smuggle
+* Surveil
+* Take Over
+* Terrorize
+* Threaten

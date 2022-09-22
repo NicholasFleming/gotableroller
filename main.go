@@ -18,6 +18,7 @@ handle number ranges eg 1-4, 5-6 for varying probabilities, probably with table 
 handle tables with same name in multiple directories
 work on windows
 if [subtable] is not found just print [subtable]
+add more maze rats tables
 */
 
 func main() {
@@ -30,8 +31,8 @@ func main() {
 	checkError(err, "Error finding file")
 
 	file, err := os.Open(path)
-	defer file.Close()
 	checkError(err, "Error reading file")
+	defer file.Close()
 
 	tableValues, err := parseTableValues(file)
 	checkError(err, "Error parsing table values")
@@ -45,7 +46,7 @@ func parseArgs(args []string) (query string, err error) {
 		return "", fmt.Errorf("Please provide a table name")
 	}
 
-	query = strings.TrimPrefix(args[1], "./")
+	query = strings.TrimPrefix(args[1], "."+string(os.PathSeparator))
 	query = strings.TrimSuffix(query, ".md")
 
 	return query, nil
@@ -94,7 +95,10 @@ func parseTableValues(tableFile *os.File) ([]string, error) {
 
 func checkForSubQueries(tableRow string) string {
 	matcher, err := regexp.Compile(`\[.+?\]`)
-	checkError(err, "Error parsing sub queries")
+	if err != nil {
+		fmt.Printf("Couldn't understand subwuery in: %s\n", tableRow)
+		return tableRow
+	}
 	hasSubQueries := matcher.Match([]byte(tableRow))
 
 	if hasSubQueries {
@@ -103,11 +107,20 @@ func checkForSubQueries(tableRow string) string {
 			subQuery = strings.TrimPrefix(subQuery, "[")
 			subQuery = strings.TrimSuffix(subQuery, "]")
 			subQueryFile, err := findTable(subQuery, "./")
-			checkError(err, "Error finding subquery: "+subQuery)
+			if err != nil {
+				fmt.Printf("Couldn't find table for sub query: %s\n", subQuery)
+				return tableRow
+			}
 			subQueryFileReader, err := os.Open(subQueryFile)
-			checkError(err, "Error reading subquery file: "+subQueryFile)
+			if err != nil {
+				fmt.Printf("Couldn't read file for sub query: %s\n", subQuery)
+				return tableRow
+			}
 			subQueryValues, err := parseTableValues(subQueryFileReader)
-			checkError(err, "Error parsing subquery values")
+			if err != nil {
+				fmt.Printf("Couldn't parse values for sub query: %s\n", subQuery)
+				return tableRow
+			}
 			subQueryResult := rollTheDice(subQueryValues)
 			// TODO handle multiple instances of the subquery
 			foo := strings.Replace(tableRow, fmt.Sprintf("[%s]", subQuery), subQueryResult, 1)

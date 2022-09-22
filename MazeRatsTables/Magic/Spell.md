@@ -1,0 +1,13 @@
+
+*  [PhysicalEffects]  [PhysicalForms]
+*  [PhysicalEffects]  [EtherealForms]
+*  [EtherealEffects]  [PhysicalForms]
+*  [EtherealEffects]  [EtherealForms]
+*  [PhysicalElements]  [PhysicalForms]
+*  [PhysicalElements]  [EtherealForms]
+*  [EtherealElements]  [PhysicalForms]
+*  [EtherealElements]  [EtherealForms]
+*  [PhysicalEffects]  [PhysicalElements]
+*  [PhysicalEffects]  [EtherealElements]
+*  [EtherealElements]  [PhysicalElements]
+*  [EtherealEffects]  [EtherealElements]
