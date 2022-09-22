@@ -1,0 +1,5 @@
+Miscellaneous: Roll on [MiscellaneousItems]
+Worn: Roll on [WornItems]
+Weapon: Roll on [WeaponItems]
+Tool: Roll on [ToolItems]
+Treasure: Roll on [Treasure Items]

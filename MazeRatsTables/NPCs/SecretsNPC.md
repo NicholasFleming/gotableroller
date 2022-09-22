@@ -24,7 +24,7 @@
 * Roll on [MisfortunesNPCs]
 * Monster hunter
 * Non-human
-* NPC
+* [NPCs]
 * Polygamist
 * Protects relic
 * Scandalous birth

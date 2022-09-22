@@ -1,0 +1,2 @@
+* [InnAdjectives] [InnNouns]
+* [InnNouns] [InnNouns]

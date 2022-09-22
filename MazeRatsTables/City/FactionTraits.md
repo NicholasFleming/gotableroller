@@ -1,0 +1,37 @@
+
+* Bankrupt
+* Bureaucratic
+* Charitable
+* Confused
+* Connected
+* Corrupt
+* Decadent
+* Decaying
+* Delusional
+* Divided
+* Dwindling
+* Efficient
+* Esoteric
+* Expanding
+* Hunted
+* Incompetent
+* Incorruptible
+* Insane
+* Insular
+* Manipulative
+* Martial
+* Personality: Roll on [Personalities]
+* Pious
+* Popular
+* Righteous
+* Ruthless
+* Secret
+* Subversive
+* Suppressed
+* Threatened
+* Thriving
+* Unpopular
+* Up-and-coming
+* Wealthy
+* Well-prepared
+* Xenophobic

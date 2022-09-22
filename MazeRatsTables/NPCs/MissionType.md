@@ -17,7 +17,7 @@
 * France
 * Impersonate
 * Impress
-* Imfiltrate
+* Infiltrate
 * Interrogate
 * Investigate
 * Kidnap

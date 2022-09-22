@@ -1,15 +1,15 @@
 * Ages
-* Attracts Birds
+* Attracts birds
 * Child-form
 * Corpulence
 * Covered in hair
-* Roll on [Animal]
-* Roll on [Animal]
-* Roll on [Animal]
-* Roll on [Animal]
-* Roll on [Animal]
-* Roll on [Animal]
-* Roll on [Animal]
+* Animal arms Roll on [Animals]
+* Animal eyes Roll on [Animals]
+* Animal head Roll on [Animals]
+* Animal legs Roll on [Animals]
+* Animal mouth Roll on [Animals]
+* Animal skin Roll on [Animals]
+* Animal form Roll on [Animals]
 * Cyclops
 * Extra arms
 * Extra eyes
@@ -17,20 +17,20 @@
 * Forked tongue
 * Gender swap
 * Hunchback
-* Item-form
+* Item-form Roll on [Items]
 * Long arms
 * Lose all hair
 * Loses teeth
-* Monster Feature: Roll on [MonsterFeatures]
-* Monster Trait: Roll on [MonsterTraits]
+* Roll on [MonsterFeatures]
+* Roll on [MonsterTraits]
 * No eyes
 * No mouth
-* Roll on [PhysicalElements]
+* Roll on [PhysicalElements] skin
 * Second face
 * Sheds skin
 * Shrinks
 * Shrivels
 * Skin boils
 * Slime trail
-* Translucent skin
+* Transclucent skin
 * Weeps blood

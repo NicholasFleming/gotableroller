@@ -1,0 +1,3 @@
+* [CivilizedNPCs]
+* [UnderworldNPCs]
+* [WildernessNPCs]

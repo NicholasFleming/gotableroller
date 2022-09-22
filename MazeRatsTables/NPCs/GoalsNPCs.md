@@ -1,36 +1,36 @@
 
 * A better life
 * Acceptance
-* Acquire item
-* Craft item
-* Destroy faction
-* Destroy item
+* Acquire Roll on [Items]
+* Craft Roll on [Items]
+* Destroy Roll on [Factions]
+* Destroy Roll on [Items]
 * Enlightenment
 * Fame
-* Found faction
+* Found Roll on [Factions]
 * Freedom
 * Glory
-* Impress NPC
+* Impress NPC: Roll on [NPCs]
 * Infamy
-* Inflitrate faction
+* Infiltrate Roll on [Factions]
 * Justice
-* Kidnap NPC
-* Lead faction
+* Kidnap NPC: Roll on [NPCs]
+* Lead Roll on [Factions]
 * Learning
-* Locate NPC
+* Locate NPC: Roll on [NPCs]
 * Love
 * Mastery
 * Power
 * Reach location
-* Rescue NPC
+* Rescue NPC: Roll on [NPCs]
 * Resolve dispute
-* Restore faction
-* Reveal secret
+* Restore Roll on [Factions]
+* Reveal a secret
 * Revenge
-* Sabotage faction
+* Sabotage Roll on [Factions]
 * Serve a deity
 * Serve evil
-* Serve faction
+* Serve Roll on [Factions]
 * Serve ideology
 * Serve leader
 * Serve the needy

@@ -27,9 +27,9 @@
 * Hates violence
 * Believes they are Invisible
 * Believes they are Invulnerable
-* Believes they have monster ability: Roll on [Monster Abilities]
-* Believes they have monster feature: Roll on [Monster Features]
-* Believes they have monster trait: Roll on [Monster Traits]
+* Believes they have monster ability: Roll on [MonsterAbilities]
+* Believes they have monster feature: Roll on [MonsterFeatures]
+* Believes they have monster trait: Roll on [MonsterTraits]
 * Must sing
 * New personality: Roll on [Personality]
 * Says thoughts

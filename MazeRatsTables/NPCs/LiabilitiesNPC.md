@@ -11,7 +11,7 @@
 * Heretic
 * Huge debts
 * Imposter
-* Insanity
+* Insanity: [Insanities]
 * Jealous
 * Leaves evidence
 * Many enemies

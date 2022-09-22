@@ -6,7 +6,7 @@
 * Colossal
 * Crystalline
 * Decaying
-* Ethereal Element
+* [EtherealElement]
 * Ethereal
 * Ever-young
 * Eyeless
@@ -22,7 +22,7 @@
 * Luminous
 * Many-headed
 * Mechanical
-* Physical Element
+* [PhysicalElement]
 * Planar
 * Reflective
 * Rubbery

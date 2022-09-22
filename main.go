@@ -11,15 +11,20 @@ import (
 	"time"
 )
 
-/* TODO
-Add Maze rats md to use for examples and dev since its creative commons
-rename project to markdownTableRoller
-handle number ranges eg 1-4, 5-6 for varying probabilities, probably with table syntax
-handle tables with same name in multiple directories
-work on windows
-if [subtable] is not found just print [subtable]
-add more maze rats tables
-*/
+//
+// TODO
+// rename project to markdownTableRoller
+// handle number ranges eg 1-4, 5-6 for varying probabilities, probably with table syntax
+// handle tables with same name in multiple directories. print paths and one random selection?
+// work on windows
+// if [subtable] is not found just print [subtable]
+// add more maze rats tables
+// update README
+// add usage string
+// replace [links] with proper [links][foo/link]
+// standardize plurilization in tables
+// create a "markdown" interface incase it comes time to add a 3rd party md package
+//
 
 func main() {
 	args := os.Args
@@ -85,6 +90,7 @@ func parseTableValues(tableFile *os.File) ([]string, error) {
 			str := checkForSubQueries(noPrefix)
 
 			tableValues = append(tableValues, str)
+
 		}
 	}
 	if len(tableValues) == 0 {

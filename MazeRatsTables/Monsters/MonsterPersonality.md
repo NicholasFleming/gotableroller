@@ -1,0 +1,37 @@
+
+* Alien
+* Aloof
+* Bored
+* Cautious
+* Cowardly
+* Curious
+* Devious
+* Distractible
+* Educated
+* Embittered
+* Envious
+* Erudite
+* Fanatical
+* Forgetful
+* Generous
+* Hateful
+* Honorable
+* Humble
+* Jaded
+* Jovial
+* Legalistic
+* Manipulative
+* Megalomaniac
+* Melancholy
+* Meticulous
+* Mystical
+* Obsessive
+* Out of Touch
+* Paranoid
+* Polite
+* Psychopathic
+* Sophisticated
+* Touchy
+* Unimpressed
+* Vain
+* Xenophobic
