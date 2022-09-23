@@ -7,14 +7,14 @@
 * Canal
 * Carriages
 * Catwalks
-* Roll on [CityActivities]
+* Roll on [CityActivities](City/CityActivities)
 * Climbable walls
 * Clothes lines
 * Crowd
 * Dead end
 * Dense fog
 * Down pour
-* Roll on [DungeonActivities]
+* Roll on [DungeonActivities](Dungeons/DungeonActivities)
 * Flooding
 * Foodstalls
 * Fountain
@@ -34,4 +34,4 @@
 * Torn up street
 * Vermin swarms
 * Well
-* Roll on [WildernessActivities]
+* Roll on [WildernessActivities](Wilderness/WildernessActivities)

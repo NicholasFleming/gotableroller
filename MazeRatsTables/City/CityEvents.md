@@ -9,10 +9,10 @@
 * Discovery
 * Earthquake
 * Faction war:
-	-   Roll on [Factions]
-	-   Roll on [Factions]
-	-   Roll on [Factions]
-	-   Roll on [Factions]
+	-   Roll on [Factions](City/Factions)
+	-   Roll on [Factions](City/Factions)
+	-   Roll on [Factions](City/Factions)
+	-   Roll on [Factions](City/Factions)
 * Fashion trend
 * Fire
 * Flood

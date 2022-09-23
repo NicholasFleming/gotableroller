@@ -31,6 +31,6 @@
 * Transport
 * Treasure Item
 * Uncovered plot
-* Valuable Material: Roll on [ValuableMaterial]
+* Valuable Material: Roll on [ValuableMaterial](Items/ValuableMaterial)
 * Vision
 * Weapon

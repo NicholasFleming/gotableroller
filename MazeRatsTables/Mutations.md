@@ -3,13 +3,13 @@
 * Child-form
 * Corpulence
 * Covered in hair
-* Animal arms Roll on [Animals]
-* Animal eyes Roll on [Animals]
-* Animal head Roll on [Animals]
-* Animal legs Roll on [Animals]
-* Animal mouth Roll on [Animals]
-* Animal skin Roll on [Animals]
-* Animal form Roll on [Animals]
+* Animal arms Roll on [Animals](Animals/Animals)
+* Animal eyes Roll on [Animals](Animals/Animals)
+* Animal head Roll on [Animals](Animals/Animals)
+* Animal legs Roll on [Animals](Animals/Animals)
+* Animal mouth Roll on [Animals](Animals/Animals)
+* Animal skin Roll on [Animals](Animals/Animals)
+* Animal form Roll on [Animals](Animals/Animals)
 * Cyclops
 * Extra arms
 * Extra eyes
@@ -17,15 +17,15 @@
 * Forked tongue
 * Gender swap
 * Hunchback
-* Item-form Roll on [Items]
+* Item-form Roll on [Items](Items)
 * Long arms
 * Lose all hair
 * Loses teeth
-* Roll on [MonsterFeatures]
-* Roll on [MonsterTraits]
+* Roll on [MonsterFeatures](Monsters/MonsterFeatures)
+* Roll on [MonsterTraits](MonsterTraits)
 * No eyes
 * No mouth
-* Roll on [PhysicalElements] skin
+* Roll on [PhysicalElements](Magic/PhysicalElements) skin
 * Second face
 * Sheds skin
 * Shrinks

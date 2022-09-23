@@ -10,16 +10,16 @@
 * Curses
 * Deception
 * Duplication
-* Roll on [EtherealEffects]
+* Roll on [EtherealEffects](Magic/EtherealEffects)
 * Exchange
 * Imprisonment
 * Instructions
 * Interrogation
 * Mind-control
-* Roll on [Missions]
+* Roll on [Missions](NPCs/Missions)
 * Mood-alteration
 * Nullification
-* Roll on [PhysicalEffects]
+* Roll on [PhysicalEffects](Magic/PhysicalEffects)
 * Planeshift
 * Protection
 * Rejuvenation

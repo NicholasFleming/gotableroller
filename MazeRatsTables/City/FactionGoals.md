@@ -4,11 +4,11 @@
 * Awaken being
 * Collect artifacts
 * Construct base
-* Control faction: Roll on [Factions]
+* Control faction: Roll on [Factions](City/Factions)
 * Control politics
 * Create artifact
-* Create monster: Roll on [Monsters]
-* Defeat faction: Roll on [Factions]
+* Create monster: Roll on [Monsters](Monsters/Monsters)
+* Defeat faction: Roll on [Factions](City/Factions)
 * Defend borders
 * Defend leader
 * Destroy artifacts
@@ -20,7 +20,7 @@
 * Exchange goods
 * Hear rumors
 * Indulge tastes
-* Infiltrate faction: Roll on [Factions]
+* Infiltrate faction: Roll on [Factions](City/Factions)
 * Map the wild
 * Overthrow order
 * Preserve lineage

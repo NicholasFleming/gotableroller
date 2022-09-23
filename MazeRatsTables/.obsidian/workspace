@@ -1,0 +1,136 @@
+{
+  "main": {
+    "id": "f8bdb29b4dc76bdd",
+    "type": "split",
+    "children": [
+      {
+        "id": "82ca31062477675c",
+        "type": "leaf",
+        "state": {
+          "type": "empty",
+          "state": {}
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "5eca78276454323f",
+    "type": "split",
+    "children": [
+      {
+        "id": "1a38fa27c25b2df2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "81a4ba74fcedce2d",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "6ca9f8c5a777bfc4",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "359f387a2cd20e6d",
+            "type": "leaf",
+            "state": {
+              "type": "starred",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "6671b72f4233066e",
+    "type": "split",
+    "children": [
+      {
+        "id": "d201858fe252d560",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "250ba3c2c2f9eb92",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "22a0cb1ee4354179",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "40f506a8c522cbea",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "abe2596ef148f824",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "active": "81a4ba74fcedce2d",
+  "lastOpenFiles": [
+    "NPCs/GoalsNPCs.md",
+    "NPCs/CivilizedNPCs.md",
+    "NPCs/AssetsNPCs.md",
+    "Names/MaleNames.md",
+    "Monsters/Monsters.md",
+    "Monsters/MonsterPersonality.md",
+    "Monsters/MonsterWeakness.md",
+    "Monsters/MonsterTactics.md",
+    "Monsters/MonsterTraits.md",
+    "Names/UpperClassSurnames.md"
+  ]
+}

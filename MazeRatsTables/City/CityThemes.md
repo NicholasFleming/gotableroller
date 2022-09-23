@@ -1,26 +1,26 @@
 
-* Animal: Roll on [Animals]
+* Animal: Roll on [Animals](Animals/Animals)
 * Aristocracy
 * Art
 * Bureaucracy
 * Castes
 * Catacombs
-* Roll on [CityActivities]
-* Roll on [CityEvents]
+* Roll on [CityActivities](City/CityActivities)
+* Roll on [CityEvents](City/CityEvents)
 * Crime families
 * Cruelty
-* Roll on [DistrictThemes]
-* Roll on [DivineDomains]
-* Faction: Roll on [Factions]
+* Roll on [DistrictThemes](City/DistrictThemes)
+* Roll on [DivineDomains](DivineDomains)
+* Faction: Roll on [Factions](City/Factions)
 * Festivals
 * Feuds
 * Intrigue
-* Lower class building: Roll on [LowerClassBuilding]
+* Lower class building: Roll on [LowerClassBuildings](City/LowerClassBuildings)
 * Martial law
 * Meritocracy
-* NPC: Roll on [NPCs]
+* NPC: Roll on [NPCs](NPCs/NPCs)
 * Opulence
-* Physical element: Roll on [PhysicalElements]
+* Physical element: Roll on [PhysicalElements](Magic/PhysicalElements)
 * Pilgrimages
 * Piracy
 * Plutocracy
@@ -32,6 +32,6 @@
 * Thievery
 * Trade
 * Tyranny
-* Upper class building: Roll on [UpperClassBuildings]
+* Upper class building: Roll on [UpperClassBuildings](City/UpperClassBuildings)
 * Wizardry
 * Xenophobia

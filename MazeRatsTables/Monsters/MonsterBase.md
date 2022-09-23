@@ -1,4 +1,4 @@
 
-* Roll on [Aerial Animals], Roll on [Aerial Animals]
-* Roll on [Terrestrial Animals], Roll on [Terrestrial Animals]
-* Roll on [Aquatic Animals], Roll on [Aquatic Animals]
+* Roll on [AerialAnimals](Animals/AerialAnimals), Roll on [AerialAnimals](Animals/AerialAnimals)
+* Roll on [TerrestrialAnimals](Animals/TerrestrialAnimals), Roll on [TerrestrialAnimals](Animals/TerrestrialAnimals)
+* Roll on [AquaticAnimals](Animals/AquaticAnimals), Roll on [AquaticAnimals](Animals/AquaticAnimals)

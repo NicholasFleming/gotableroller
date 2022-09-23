@@ -5,12 +5,12 @@
 * Build
 * Bury
 * Capture
-* Roll on [CityActivities]
+* Roll on [CityActivities](City/CityActivities)
 * Convene
 * Demolish
 * Die
 * Duel
-* Roll on [DungeonActivities]
+* Roll on [DungeonActivities](Dungeons/DungeonActivities)
 * Eat
 * Excavate
 * Feast

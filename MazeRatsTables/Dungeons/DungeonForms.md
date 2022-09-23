@@ -5,17 +5,17 @@
 * Bank
 * Baths
 * Body
-* Roll on [BuildingRooms]
+* Roll on [BuildingRooms](City/BuildingRooms)
 * Casino
 * Catacombs
 * Cave
 * Court
-* Roll on [DungeonRooms]
+* Roll on [DungeonRooms](Dungeons/DungeonRooms)
 * Forge
 * Garden
 * Hideout
 * Hotel
-* Roll on [LowerClassBuilding]
+* Roll on [LowerClassBuilding](City/LowerClassBuildings)
 * Laboratory
 * Library
 * Market
@@ -31,7 +31,7 @@
 * Slavepit
 * Temple
 * Theater
-* Roll on [UpperClassBuildings]
+* Roll on [UpperClassBuildings](City/UpperClassBuildings)
 * University
 * Vault
 * Zoo

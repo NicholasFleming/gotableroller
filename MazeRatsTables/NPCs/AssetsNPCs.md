@@ -6,8 +6,8 @@
 * Erases evidence
 * Excellent Liar
 * Extremely rich
-* [Factions] leader
-* [Factions] member
+* [Factions](City/Factions) leader
+* [Factions](City/Factions) member
 * Feared
 * Fortified base
 * Gorgeous

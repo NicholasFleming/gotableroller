@@ -11,7 +11,7 @@
 * Cloakroom
 * Dining room
 * Dressing room
-* Roll on [DungeonRooms]
+* Roll on [DungeonRooms](Dungeons/DungeonRooms)
 * Garden
 * Garret
 * Greenhouse

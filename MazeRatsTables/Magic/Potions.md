@@ -1,31 +1,31 @@
 
-* Animal-form: Roll on [Animals]
+* Animal-form: Roll on [Animals](Animals/Animals)
 * Body swap
 * Camouflage
 * Control animals
-* Control element: Roll on [MagicalElements]
+* Control element: Roll on [MagicalElements](Magic/MagicalElements)
 * Cure affliction
 * Detect evil
 * Detect gold
 * Detect hidden
 * Direction sense
-* Element-form: Roll on [MagicalElements]
-* Element-skin: Roll on [MagicalElements]
+* Element-form: Roll on [MagicalElements](Magic/MagicalElements)
+* Element-skin: Roll on [MagicalElements](Magic/MagicalElements)
 * Extra arm
 * Flight
 * Ghost-speech
 * Heat vision
-* Insanity: Roll on [Insanities]
+* Insanity: Roll on [Insanities](Insanities)
 * Invulnerable
-* Item-form: Roll on [Items]
+* Item-form: Roll on [Items](Items)
 * Magic immunity
 * Mirror image
-* Roll on [MonsterAbilities]
-* Roll on [MonsterFeatures]
-* Roll on [MonsterTraits]
-* Mutation: Roll on [Mutations]
+* Roll on [MonsterAbilities](MonsterAbilities)
+* Roll on [MonsterFeatures](Monsters/MonsterFeatures)
+* Roll on [MonsterTraits](MonsterTraits)
+* Mutation: Roll on [Mutations](Mutations)
 * Night vision
-* Random spell: Roll on [Spell]
+* Random spell: Roll on [Spell](Spell)
 * Restore health
 * Speed
 * Stretchy

@@ -10,8 +10,8 @@
 * Damaged
 * Disguised
 * Draws enemies
-* Effect: Roll on [Magical Effects]
-* Element: Roll on [Magical Elements]
+* Effect: Roll on [MagicalEffects](Magic/MagicalEffects)
+* Element: Roll on [MagicalElements](Magic/MagicalElements)
 * Embellished
 * Encoded
 * Exotic

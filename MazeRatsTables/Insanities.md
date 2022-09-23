@@ -1,6 +1,6 @@
 * Always lies
 * Always polite
-* Believes they are a Roll on [Animal]
+* Believes they are a Roll on [Animals](Animals/Animals)
 * Cannot Count
 * Cannot Lie
 * Faceblind
@@ -27,10 +27,10 @@
 * Hates violence
 * Believes they are Invisible
 * Believes they are Invulnerable
-* Believes they have monster ability: Roll on [MonsterAbilities]
-* Believes they have monster feature: Roll on [MonsterFeatures]
-* Believes they have monster trait: Roll on [MonsterTraits]
+* Believes they have monster ability: Roll on [MonsterAbilities](MonsterAbilities)
+* Believes they have monster feature: Roll on [MonsterFeatures](Monsters/MonsterFeatures)
+* Believes they have monster trait: Roll on [MonsterTraits](MonsterTraits)
 * Must sing
-* New personality: Roll on [Personality]
+* New personality: Roll on [Personalities](Personalities.md)
 * Says thoughts
 * Sees dead people

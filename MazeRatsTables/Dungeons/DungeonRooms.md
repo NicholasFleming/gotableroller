@@ -2,7 +2,7 @@
 * Armory
 * Banquet hall
 * Barracks
-* Roll on [BuildingRooms]
+* Roll on [BuildingRooms](City/BuildingRooms)
 * Catacombs
 * Cavern
 * Chasm
@@ -15,7 +15,7 @@
 * Gate house
 * Guard room
 * Kennel
-* Roll on [LowerClassBuilding]
+* Roll on [LowerClassBuilding](City/LowerClassBuildings)
 * Laboratory
 * Messhall
 * Mineshaft
@@ -31,7 +31,7 @@
 * Throneroom
 * Torture room
 * Treasury
-* Roll on [UpperClassBuildings]
+* Roll on [UpperClassBuildings](City/UpperClassBuildings)
 * Vault
 * Well
 * Workshop

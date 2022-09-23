@@ -15,14 +15,14 @@
 * Holy icon
 * Holy water
 * Home cooking
-* Insanity: Roll on [Insanities]
+* Insanity: Roll on [Insanities](Insanities)
 * Mirrors
 * Mistletoe
 * Moonlight
 * Music
-* Method: Roll on [Methods]
+* Method: Roll on [Methods](NPCs/MethodsNPCs)
 * Phylactery
-* Roll on [PhysicalElements]
+* Roll on [PhysicalElements](Magic/PhysicalElements)
 * Puzzles
 * Riddles
 * Rituals
@@ -30,8 +30,8 @@
 * Sunlight
 * Tears
 * True name
-* Roll on [ValuableMaterials]
+* Roll on [ValuableMaterials](Items/ValuableMaterials)
 * Weak spot
-* Roll on [WeaponItems]
+* Roll on [WeaponItems](Items/WeaponItems)
 * Wine
 * Wormwood

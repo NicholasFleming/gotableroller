@@ -1,3 +1,0 @@
-* [AerialAnimals]
-* [TerrestialAnimals]
-* [AquaticAnimals]

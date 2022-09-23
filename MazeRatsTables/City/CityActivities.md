@@ -9,7 +9,7 @@
 * Cook
 * Dance
 * Duel
-* Roll on [DungeonActivities]
+* Roll on [DungeonActivities](Dungeons/DungeonActivities)
 * Execute
 * Extinguish
 * Extort
@@ -18,7 +18,7 @@
 * Haul
 * Interrogate
 * Marty
-* Roll on [Missions]
+* Roll on [Missions](NPCs/Missions)
 * Mourn
 * Party
 * Patrol
@@ -34,4 +34,4 @@
 * Rob
 * Search
 * Sell
-* Roll on [WildernessActivities]
+* Roll on [WildernessActivities](Wilderness/WildernessActivities)

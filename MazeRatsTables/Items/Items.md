@@ -1,5 +1,5 @@
-Miscellaneous: Roll on [MiscellaneousItems]
-Worn: Roll on [WornItems]
-Weapon: Roll on [WeaponItems]
-Tool: Roll on [ToolItems]
-Treasure: Roll on [Treasure Items]
+Miscellaneous: Roll on [MiscellaneousItems](Items/MiscellaneousItems)
+Worn: Roll on [WornItems](Items/WornItems)
+Weapon: Roll on [WeaponItems](Items/WeaponItems)
+Tool: Roll on [ToolItems](Items/ToolItems)
+Treasure: Roll on [TreasureItems](Items/TreasureItems)

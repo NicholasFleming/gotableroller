@@ -20,7 +20,7 @@
 * Insular
 * Manipulative
 * Martial
-* Personality: Roll on [Personalities]
+* Personality: Roll on [Personalities](Personalities)
 * Pious
 * Popular
 * Righteous

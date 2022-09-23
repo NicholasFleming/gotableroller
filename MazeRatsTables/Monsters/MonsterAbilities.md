@@ -7,7 +7,7 @@
 * Duplicating
 * Electric
 * Entangling
-* [EtherealEffect]
+* [EtherealEffects](Magic/EtherealEffects)
 * Exploding
 * Flying
 * Gaze weapon
@@ -20,7 +20,7 @@
 * Mind-reading
 * Paralyzing
 * Phasing
-* [PhysicalEffect]
+* [PhysicalEffects](Magic/PhysicalEffects)
 * Poisonous
 * Radioactive
 * Reflective

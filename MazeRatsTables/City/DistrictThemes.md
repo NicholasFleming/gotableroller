@@ -1,5 +1,5 @@
 * Catacombs
-* Roll on [CivilizedNPCs]
+* Roll on [CivilizedNPCs](NPCs/CivilizedNPCs)
 * Construction
 * Crafts
 * Criminality
@@ -16,7 +16,7 @@
 * Industrialization
 * Judgement
 * Livestock
-* Lower class building: Roll on [LowerClassBuilding]
+* Lower class building: Roll on [LowerClassBuilding](City/LowerClassBuildings)
 * Marketplace
 * Memorials
 * Military
@@ -28,9 +28,9 @@
 * Science
 * Trade
 * Trash
-* Roll on [UnderworldNPCs]
-* Upper class building: Roll on [UpperClassBuildings]
+* Roll on [UnderworldNPCs](NPCs/UnderworldNPCs)
+* Upper class building: Roll on [UpperClassBuildings](City/UpperClassBuildings)
 * Vices
-* Roll on [WildernessNPCs]
+* Roll on [WildernessNPCs](NPCs/WildernessNPCs)
 * Wizardry
 * Wonders

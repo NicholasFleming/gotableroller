@@ -18,12 +18,12 @@
 * Fungus
 * Haunting
 * Ice
-* Insanity: Roll on [Insanities]
+* Insanity: Roll on [Insanities](Insanities)
 * Lava flow
 * Magical sleep
 * Melted
 * Monster attack
-* Mutation: Roll on [Mutations]
+* Mutation: Roll on [Mutations](Mutations)
 * Outsider attack
 * Overgrowth
 * Petrification

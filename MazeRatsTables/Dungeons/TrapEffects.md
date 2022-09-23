@@ -21,7 +21,7 @@
 * Lightning
 * Living statues
 * Missile fire
-* Monster freed: Roll on [Monsters]
+* Monster freed: Roll on [Monsters](Monsters/Monsters)
 * Nettrap
 * Pendulum blade
 * Poison gas

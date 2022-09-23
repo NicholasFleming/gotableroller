@@ -9,6 +9,8 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"golang.org/x/exp/slices"
 )
 
 //
@@ -21,10 +23,10 @@ import (
 // add more maze rats tables
 // update README
 // add usage string
-// replace [links] with proper [links][foo/link]
-// standardize plurilization in tables
 // create a "markdown" interface incase it comes time to add a 3rd party md package
 //
+
+var dotSlash string = "." + string(os.PathSeparator)
 
 func main() {
 	args := os.Args
@@ -32,7 +34,7 @@ func main() {
 	query, err := parseArgs(args)
 	checkError(err, "Bad command argument")
 
-	path, err := findTable(query, "./")
+	path, err := findTable(query, dotSlash)
 	checkError(err, "Error finding file")
 
 	file, err := os.Open(path)
@@ -51,7 +53,11 @@ func parseArgs(args []string) (query string, err error) {
 		return "", fmt.Errorf("Please provide a table name")
 	}
 
-	query = strings.TrimPrefix(args[1], "."+string(os.PathSeparator))
+	if slices.Contains([]string{"-h", "--h", "-help", "--help", "\\h", "\\help"}, args[1]) {
+		printUsageAndExit()
+	}
+
+	query = strings.TrimPrefix(args[1], dotSlash)
 	query = strings.TrimSuffix(query, ".md")
 
 	return query, nil
@@ -61,11 +67,13 @@ func findTable(search string, dir string) (tablePath string, err error) {
 	if search == "" {
 		return "", fmt.Errorf("Please provide a table name. Search: %s, Directory: %s", search, dir)
 	}
+
+	search = standardizeSearch(search)
 	err = filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if tablePath != "" {
 			return nil
 		}
-		if strings.Contains(strings.ToLower(path), strings.ToLower(search+".md")) {
+		if strings.Contains(strings.ToLower(path), search) {
 			tablePath = path
 			return nil
 		}
@@ -77,11 +85,20 @@ func findTable(search string, dir string) (tablePath string, err error) {
 	return tablePath, err
 }
 
+func standardizeSearch(search string) string {
+	search = filepath.FromSlash(search)
+	search = strings.ToLower(search)
+	if !strings.HasSuffix(search, ".md") {
+		search = search + ".md"
+	}
+	return search
+}
+
 func parseTableValues(tableFile *os.File) ([]string, error) {
 	scanner := bufio.NewScanner(tableFile)
 	var tableValues []string
 	for scanner.Scan() {
-		matcher, err := regexp.Compile(`^(\d+\. |\* )`)
+		matcher, err := regexp.Compile(`^(\d+\. |\* )`) // Ex. starts with '* ' or '1. '
 		checkError(err, "Error parsing table values")
 		isValue := matcher.Match([]byte(scanner.Text()))
 		if isValue {
@@ -100,37 +117,37 @@ func parseTableValues(tableFile *os.File) ([]string, error) {
 }
 
 func checkForSubQueries(tableRow string) string {
-	matcher, err := regexp.Compile(`\[.+?\]`)
-	if err != nil {
-		fmt.Printf("Couldn't understand subwuery in: %s\n", tableRow)
-		return tableRow
-	}
-	hasSubQueries := matcher.Match([]byte(tableRow))
+	linkMatcher := regexp.MustCompile(`\[.+?\]\(.+?\)`)
+	prefixMatcher := regexp.MustCompile(`\[.+?\]\(`)
+
+	hasSubQueries := linkMatcher.Match([]byte(tableRow))
 
 	if hasSubQueries {
-		subQueries := matcher.FindAllString(tableRow, -1)
-		for _, subQuery := range subQueries {
-			subQuery = strings.TrimPrefix(subQuery, "[")
-			subQuery = strings.TrimSuffix(subQuery, "]")
-			subQueryFile, err := findTable(subQuery, "./")
+
+		subQueries := linkMatcher.FindAllString(tableRow, -1)
+		for _, subQueryLink := range subQueries {
+			subQuery := prefixMatcher.ReplaceAllString(subQueryLink, "")
+			subQuery = strings.TrimSuffix(subQuery, ")")
+			subQueryFile, err := findTable(subQuery, dotSlash)
 			if err != nil {
+				fmt.Printf("Error: %v\n", err)
 				fmt.Printf("Couldn't find table for sub query: %s\n", subQuery)
 				return tableRow
 			}
 			subQueryFileReader, err := os.Open(subQueryFile)
 			if err != nil {
+				fmt.Printf("Error: %v\n", err)
 				fmt.Printf("Couldn't read file for sub query: %s\n", subQuery)
 				return tableRow
 			}
 			subQueryValues, err := parseTableValues(subQueryFileReader)
 			if err != nil {
+				fmt.Printf("Error: %v\n", err)
 				fmt.Printf("Couldn't parse values for sub query: %s\n", subQuery)
 				return tableRow
 			}
 			subQueryResult := rollTheDice(subQueryValues)
-			// TODO handle multiple instances of the subquery
-			foo := strings.Replace(tableRow, fmt.Sprintf("[%s]", subQuery), subQueryResult, 1)
-			tableRow = foo
+			tableRow = strings.Replace(tableRow, subQueryLink, subQueryResult, 1)
 		}
 	}
 	return tableRow
@@ -147,4 +164,12 @@ func checkError(err error, msg string) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+func printUsageAndExit() {
+	fmt.Println("Usage: gotableroller {TableName}\nTableName: the name of the markdown file containing the table. " +
+		"This file must exist the same directory or a subdirectory of gotableroller. TableName may/maynot contain" +
+		"the '.md' extension. It may contain path components as while. Examples: 'Weapons', 'weapons', 'weapons.md', " +
+		"'Items/Weapons.md'")
+	os.Exit(0)
 }

@@ -1,7 +1,7 @@
 
 * All iron rusts
 * Animals Die
-* Animals mutate: Roll on [Mutations]
+* Animals mutate: Roll on [Mutations](Mutations)
 * Birds attack
 * City appears
 * Deadly fog
@@ -17,8 +17,8 @@
 * Graves open
 * Lamentations
 * Maggots
-* Mass insanity: Roll on [Insanities]
-* Mass mutation: Roll on [Mutations]
+* Mass insanity: Roll on [Insanities](Insanities)
+* Mass mutation: Roll on [Mutations](Mutations)
 * Mass slumber
 * Meteor strike
 * Mirrors speak

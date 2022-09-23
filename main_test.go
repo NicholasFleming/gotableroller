@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -23,75 +24,75 @@ func Test_parseArgs_withExtension(t *testing.T) {
 }
 
 func Test_parseArgs_dotSlash(t *testing.T) {
-	args := []string{"foo", "./TestTable"}
+	args := []string{"foo", dotSlash + "TestTable"}
 	query, err := parseArgs(args)
 	assert.NoError(t, err)
 	assert.Equal(t, "TestTable", query)
 }
 
 func Test_parseArgs_dotSlash_withExtension(t *testing.T) {
-	args := []string{"foo", "./TestTable.md"}
+	args := []string{"foo", dotSlash + "TestTable.md"}
 	query, err := parseArgs(args)
 	assert.NoError(t, err)
 	assert.Equal(t, "TestTable", query)
 }
 
 func Test_parseArgs_pathToFile(t *testing.T) {
-	args := []string{"foo", "Test/TestTable.md"}
+	args := []string{"foo", filepath.FromSlash("Test/TestTable.md")}
 	query, err := parseArgs(args)
 	assert.NoError(t, err)
-	assert.Equal(t, "Test/TestTable", query)
+	assert.Equal(t, filepath.FromSlash("Test/TestTable"), query)
 }
 
 func Test_parseArgs_pathToFileInSubDir(t *testing.T) {
-	args := []string{"foo", "Test/testdir/SubTestTable.md"}
+	args := []string{"foo", filepath.FromSlash("Test/testdir/SubTestTable.md")}
 	query, err := parseArgs(args)
 	assert.NoError(t, err)
-	assert.Equal(t, "Test/testdir/SubTestTable", query)
+	assert.Equal(t, filepath.FromSlash("Test/testdir/SubTestTable"), query)
 }
 
 func Test_findFiles(t *testing.T) {
-	path, err := findTable("TestTable", "./Test")
+	path, err := findTable("TestTable", dotSlash+"Test")
 	assert.NoError(t, err)
-	assert.Equal(t, "Test/TestTable.md", path)
+	assert.Equal(t, filepath.FromSlash("Test/TestTable.md"), path)
 }
 
 func Test_findFiles_subDir(t *testing.T) {
-	path, err := findTable("SubTestTable", "./Test")
+	path, err := findTable("SubTestTable", dotSlash+"Test")
 	assert.NoError(t, err)
-	assert.Equal(t, "Test/testdir/SubTestTable.md", path)
+	assert.Equal(t, filepath.FromSlash("Test/testdir/SubTestTable.md"), path)
 }
 
 func Test_findFiles_specifyPath(t *testing.T) {
-	path, err := findTable("testdir/SubTestTable", "./Test")
+	path, err := findTable(filepath.FromSlash("testdir/SubTestTable"), dotSlash+"Test")
 	assert.NoError(t, err)
-	assert.Equal(t, "Test/testdir/SubTestTable.md", path)
+	assert.Equal(t, filepath.FromSlash("Test/testdir/SubTestTable.md"), path)
 
-	path, err = findTable("Test/testdir/SubTestTable", "./Test")
+	path, err = findTable(filepath.FromSlash("Test/testdir/SubTestTable"), dotSlash+"Test")
 	assert.NoError(t, err)
-	assert.Equal(t, "Test/testdir/SubTestTable.md", path)
+	assert.Equal(t, filepath.FromSlash("Test/testdir/SubTestTable.md"), path)
 }
 
 func Test_findFiles_caseInsensitive(t *testing.T) {
-	path, err := findTable("testtable", "./Test")
+	path, err := findTable("testtable", dotSlash+"Test")
 	assert.NoError(t, err)
-	assert.Equal(t, "Test/TestTable.md", path)
+	assert.Equal(t, filepath.FromSlash("Test/TestTable.md"), path)
 }
 
 func Test_findFiles_BadName(t *testing.T) {
-	path, err := findTable("I_Dont_Exist", "./Test")
+	path, err := findTable("I_Dont_Exist", dotSlash+"Test")
 	assert.Error(t, err)
 	assert.Empty(t, path)
 }
 
 func Test_findFiles_EmptyName(t *testing.T) {
-	path, err := findTable("", "./Test")
+	path, err := findTable("", dotSlash+"Test")
 	assert.Error(t, err)
 	assert.Empty(t, path)
 }
 
 func Test_parseTableValues_bulleted(t *testing.T) {
-	file, _ := os.Open("Test/TestTable.md")
+	file, _ := os.Open(filepath.FromSlash("Test/TestTable.md"))
 	defer file.Close()
 	actual, err := parseTableValues(file)
 	assert.NoError(t, err)
@@ -101,7 +102,7 @@ func Test_parseTableValues_bulleted(t *testing.T) {
 }
 
 func Test_parseTableValues_numbered(t *testing.T) {
-	file, _ := os.Open("Test/testdir/SubTestTable.md")
+	file, _ := os.Open(filepath.FromSlash("Test/testdir/SubTestTable.md"))
 	defer file.Close()
 	actual, err := parseTableValues(file)
 	assert.NoError(t, err)
@@ -109,15 +110,15 @@ func Test_parseTableValues_numbered(t *testing.T) {
 }
 
 func Test_linkedTables(t *testing.T) {
-	file, _ := os.Open("Test/TestTable.md")
-	file2, _ := os.Open("Test/testdir/SubTestTable.md")
+	file, _ := os.Open(filepath.FromSlash("Test/TestTable.md"))
+	file2, _ := os.Open(filepath.FromSlash("Test/testdir/SubTestTable.md"))
 	defer file.Close()
 	defer file2.Close()
 	tableValues, err := parseTableValues(file)
 	assert.NoError(t, err)
 	subTableValues, err := parseTableValues(file2)
 	assert.NoError(t, err)
-	assert.NotContains(t, tableValues, "Option with [SubTestTable]")
+	assert.NotContains(t, tableValues, "Option with [SubTestTable](testdir/SubTestTable)")
 	found := false
 	for _, value := range tableValues {
 		for _, subValue := range subTableValues {

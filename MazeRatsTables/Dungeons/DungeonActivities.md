@@ -1,7 +1,7 @@
 
 * Besiege
 * Capture
-* Roll on [CityActivities]
+* Roll on [CityActivities](City/CityActivities)
 * Collect
 * Construct
 * Control
@@ -16,7 +16,7 @@
 * Loot
 * Map
 * Mine
-* Roll on [MonsterTactics]
+* Roll on [MonsterTactics](Monsters/MonsterTactics)
 * Negotiate
 * Patrol
 * Perform ritual
@@ -33,5 +33,5 @@
 * Tunnel
 * Unearth
 * Vandalize
-* Roll on [WildernessActivities]
+* Roll on [WildernessActivities](Wilderness/WildernessActivities)
 * Worship

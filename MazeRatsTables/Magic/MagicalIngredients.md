@@ -1,15 +1,15 @@
 
 * Ancient liquor
-* Animal: Roll on [Animals]
+* Animal: Roll on [Animals](Animals/Animals)
 * Blind eye
 * Boiled cat
-* Book page: Roll on [BookSubjects]
+* Book page: Roll on [BookSubjects](Items/BookSubjects)
 * Bottled fog
 * Coffin nail
 * Corpse’shair
 * Crossroad dust
 * Cultist entrails
-* Edible plant: Roll on [EdiblePlants]
+* Edible plant: Roll on [EdiblePlants](Wilderness/EdiblePlants)
 * Exotic spice
 * Killer's hand
 * King’s tooth
@@ -18,12 +18,12 @@
 * Lightning bolt
 * Lodestone
 * Monk’s vow
-* Roll on [MonsterFeatures]
+* Roll on [MonsterFeatures](Monsters/MonsterFeatures)
 * Newborn’s cry
 * Oil portrait
-* Roll on [PhysicalElements]
-* Poisonous plant: Roll on [PoisonousPlants]
-* Potion: Roll on [Potions]
+* Roll on [PhysicalElements](Magic/PhysicalElements)
+* Poisonous plant: Roll on [PoisonousPlants](Wilderness/PoisonousPlants)
+* Potion: Roll on [Potions](Magic/Potions)
 * Pyre ember
 * Queen bee
 * Queen’s blood
@@ -31,7 +31,7 @@
 * Star-metal
 * Thief’s finger
 * Tomb flower
-* Valuable material: Roll on [ValuableMaterials]
+* Valuable material: Roll on [ValuableMaterials](Items/ValuableMaterials)
 * Wedding ring
 * Widow’s tears
 * Wizard skull

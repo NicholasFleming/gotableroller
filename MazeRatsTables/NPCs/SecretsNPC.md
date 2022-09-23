@@ -21,10 +21,10 @@
 * Low born
 * Married
 * Mind-controlled
-* Roll on [MisfortunesNPCs]
+* Roll on [MisfortunesNPCs](MisfortunesNPCs)
 * Monster hunter
 * Non-human
-* [NPCs]
+* [NPCs](NPCs/NPCs)
 * Polygamist
 * Protects relic
 * Scandalous birth

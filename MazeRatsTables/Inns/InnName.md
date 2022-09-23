@@ -1,2 +1,2 @@
-* [InnAdjectives] [InnNouns]
-* [InnNouns] [InnNouns]
+* [InnAdjectives](Inns/InnAdjectives) [InnNouns](Inns/InnNouns)
+* [InnNouns](Inns/InnNouns) [InnNouns](Inns/InnNouns)

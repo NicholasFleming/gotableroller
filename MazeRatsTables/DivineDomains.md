@@ -1,5 +1,5 @@
 
-* Animal Roll on [Animals]
+* Animal Roll on [Animals](Animals/Animals)
 * Balance
 * Betrayal
 * Chance
@@ -9,7 +9,7 @@
 * Death
 * Destiny
 * Dreams
-* Element Roll on [MagicalElements]
+* Element Roll on [MagicalElements](Magic/MagicalElements)
 * Gateways
 * Judgement
 * Love
@@ -17,7 +17,7 @@
 * Monsters
 * Moon
 * Motherhood
-* NPC Roll on [NPCs]
+* NPC Roll on [NPCs](NPCs/NPCs)
 * Oaths
 * Order
 * Plague
