@@ -9,8 +9,6 @@ import (
 	"regexp"
 	"strings"
 	"time"
-
-	"golang.org/x/exp/slices"
 )
 
 //
@@ -18,15 +16,8 @@ import (
 // rename project to markdownTableRoller
 // handle number ranges eg 1-4, 5-6 for varying probabilities, probably with table syntax
 // handle tables with same name in multiple directories. print paths and one random selection?
-// work on windows
-// if [subtable] is not found just print [subtable]
-// add more maze rats tables
 // update README
-// add usage string
-// create a "markdown" interface incase it comes time to add a 3rd party md package
 //
-
-var dotSlash string = "." + string(os.PathSeparator)
 
 func main() {
 	args := os.Args
@@ -34,7 +25,9 @@ func main() {
 	query, err := parseArgs(args)
 	checkError(err, "Bad command argument")
 
-	path, err := findTable(query, dotSlash)
+	query = standardizeSearch(query)
+
+	path, err := findTable(query, ".")
 	checkError(err, "Error finding file")
 
 	file, err := os.Open(path)
@@ -53,14 +46,26 @@ func parseArgs(args []string) (query string, err error) {
 		return "", fmt.Errorf("Please provide a table name")
 	}
 
-	if slices.Contains([]string{"-h", "--h", "-help", "--help", "\\h", "\\help"}, args[1]) {
+	if len(args) > 2 {
+		return "", fmt.Errorf("Unknown options: %v", args[2:])
+	}
+
+	if contains([]string{"-h", "--h", "-help", "--help", "\\h", "\\help"}, args[1]) {
 		printUsageAndExit()
 	}
 
-	query = strings.TrimPrefix(args[1], dotSlash)
-	query = strings.TrimSuffix(query, ".md")
+	return args[1], nil
+}
 
-	return query, nil
+func standardizeSearch(search string) string {
+	search = strings.TrimPrefix(search, "./")
+	search = strings.TrimPrefix(search, ".\\")
+	search = filepath.FromSlash(search)
+	search = strings.ToLower(search)
+	if !strings.HasSuffix(search, ".md") {
+		search = search + ".md"
+	}
+	return search
 }
 
 func findTable(search string, dir string) (tablePath string, err error) {
@@ -68,7 +73,6 @@ func findTable(search string, dir string) (tablePath string, err error) {
 		return "", fmt.Errorf("Please provide a table name. Search: %s, Directory: %s", search, dir)
 	}
 
-	search = standardizeSearch(search)
 	err = filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if tablePath != "" {
 			return nil
@@ -85,29 +89,17 @@ func findTable(search string, dir string) (tablePath string, err error) {
 	return tablePath, err
 }
 
-func standardizeSearch(search string) string {
-	search = filepath.FromSlash(search)
-	search = strings.ToLower(search)
-	if !strings.HasSuffix(search, ".md") {
-		search = search + ".md"
-	}
-	return search
-}
-
 func parseTableValues(tableFile *os.File) ([]string, error) {
 	scanner := bufio.NewScanner(tableFile)
 	var tableValues []string
 	for scanner.Scan() {
-		matcher, err := regexp.Compile(`^(\d+\. |\* )`) // Ex. starts with '* ' or '1. '
+		markdownListItem, err := regexp.Compile(`^(\d+\. |\* )`)
 		checkError(err, "Error parsing table values")
-		isValue := matcher.Match([]byte(scanner.Text()))
+		isValue := markdownListItem.Match([]byte(scanner.Text()))
 		if isValue {
-			noPrefix := matcher.ReplaceAllString(scanner.Text(), "")
-			// TODO Do this after the result is picked to avoid extra work
+			noPrefix := markdownListItem.ReplaceAllString(scanner.Text(), "")
 			str := checkForSubQueries(noPrefix)
-
 			tableValues = append(tableValues, str)
-
 		}
 	}
 	if len(tableValues) == 0 {
@@ -117,38 +109,29 @@ func parseTableValues(tableFile *os.File) ([]string, error) {
 }
 
 func checkForSubQueries(tableRow string) string {
-	linkMatcher := regexp.MustCompile(`\[.+?\]\(.+?\)`)
-	prefixMatcher := regexp.MustCompile(`\[.+?\]\(`)
+	// Ex. Matches markdown links like [Link Label](path/to/table) With subgroups: [1] = path/to/table
+	linkMatcher := regexp.MustCompile(`\[.+?\]\((.+?)\)`)
 
-	hasSubQueries := linkMatcher.Match([]byte(tableRow))
-
-	if hasSubQueries {
-
-		subQueries := linkMatcher.FindAllString(tableRow, -1)
-		for _, subQueryLink := range subQueries {
-			subQuery := prefixMatcher.ReplaceAllString(subQueryLink, "")
-			subQuery = strings.TrimSuffix(subQuery, ")")
-			subQueryFile, err := findTable(subQuery, dotSlash)
-			if err != nil {
-				fmt.Printf("Error: %v\n", err)
-				fmt.Printf("Couldn't find table for sub query: %s\n", subQuery)
-				return tableRow
-			}
-			subQueryFileReader, err := os.Open(subQueryFile)
-			if err != nil {
-				fmt.Printf("Error: %v\n", err)
-				fmt.Printf("Couldn't read file for sub query: %s\n", subQuery)
-				return tableRow
-			}
-			subQueryValues, err := parseTableValues(subQueryFileReader)
-			if err != nil {
-				fmt.Printf("Error: %v\n", err)
-				fmt.Printf("Couldn't parse values for sub query: %s\n", subQuery)
-				return tableRow
-			}
-			subQueryResult := rollTheDice(subQueryValues)
-			tableRow = strings.Replace(tableRow, subQueryLink, subQueryResult, 1)
+	subQueries := linkMatcher.FindAllStringSubmatch(tableRow, -1)
+	for _, subQueryLink := range subQueries {
+		subQuery := standardizeSearch(subQueryLink[1])
+		subQueryFile, err := findTable(subQuery, ".")
+		if err != nil {
+			fmt.Printf("Couldn't find table for sub query: %s, Error: %v\n", subQuery, err)
+			return tableRow
 		}
+		subQueryFileReader, err := os.Open(subQueryFile)
+		if err != nil {
+			fmt.Printf("Couldn't read file for sub query: %s, Error: %v\n", subQuery, err)
+			return tableRow
+		}
+		subQueryValues, err := parseTableValues(subQueryFileReader)
+		if err != nil {
+			fmt.Printf("Couldn't parse values for sub query: %s, Error: %s\n", subQuery, err)
+			return tableRow
+		}
+		subQueryResult := rollTheDice(subQueryValues)
+		tableRow = strings.Replace(tableRow, subQueryLink[0], subQueryResult, 1)
 	}
 	return tableRow
 }
@@ -172,4 +155,13 @@ func printUsageAndExit() {
 		"the '.md' extension. It may contain path components as while. Examples: 'Weapons', 'weapons', 'weapons.md', " +
 		"'Items/Weapons.md'")
 	os.Exit(0)
+}
+
+func contains[T comparable](ts []T, t T) bool {
+	for _, v := range ts {
+		if v == t {
+			return true
+		}
+	}
+	return false
 }

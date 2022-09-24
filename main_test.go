@@ -9,84 +9,58 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func Test_standardizeSearch(t *testing.T) {
+	assert.Equal(t, "testtable.md", standardizeSearch("TestTable"))
+	assert.Equal(t, "testtable.md", standardizeSearch("TestTable.md"))
+	assert.Equal(t, "testtable.md", standardizeSearch("testtable"))
+	assert.Equal(t, "testtable.md", standardizeSearch("testtable.md"))
+	assert.Equal(t, "testtable.md", standardizeSearch("./testtable"))
+	assert.Equal(t, "testtable.md", standardizeSearch(".\\testtable"))
+	assert.Equal(t, filepath.FromSlash("test/testtable.md"), standardizeSearch("Test/TestTable.md"))
+	assert.Equal(t, filepath.FromSlash("test/testtable.md"), standardizeSearch("Test/TestTable"))
+}
+
 func Test_parseArgs(t *testing.T) {
-	args := []string{"foo", "TestTable"}
-	query, err := parseArgs(args)
+	query, err := parseArgs([]string{"foo", "TestTable"})
 	assert.NoError(t, err)
 	assert.Equal(t, "TestTable", query)
 }
 
-func Test_parseArgs_withExtension(t *testing.T) {
-	args := []string{"foo", "TestTable.md"}
-	query, err := parseArgs(args)
-	assert.NoError(t, err)
-	assert.Equal(t, "TestTable", query)
-}
-
-func Test_parseArgs_dotSlash(t *testing.T) {
-	args := []string{"foo", dotSlash + "TestTable"}
-	query, err := parseArgs(args)
-	assert.NoError(t, err)
-	assert.Equal(t, "TestTable", query)
-}
-
-func Test_parseArgs_dotSlash_withExtension(t *testing.T) {
-	args := []string{"foo", dotSlash + "TestTable.md"}
-	query, err := parseArgs(args)
-	assert.NoError(t, err)
-	assert.Equal(t, "TestTable", query)
-}
-
-func Test_parseArgs_pathToFile(t *testing.T) {
-	args := []string{"foo", filepath.FromSlash("Test/TestTable.md")}
-	query, err := parseArgs(args)
-	assert.NoError(t, err)
-	assert.Equal(t, filepath.FromSlash("Test/TestTable"), query)
-}
-
-func Test_parseArgs_pathToFileInSubDir(t *testing.T) {
-	args := []string{"foo", filepath.FromSlash("Test/testdir/SubTestTable.md")}
-	query, err := parseArgs(args)
-	assert.NoError(t, err)
-	assert.Equal(t, filepath.FromSlash("Test/testdir/SubTestTable"), query)
+func Test_parseArgs_noQuery(t *testing.T) {
+	_, err := parseArgs([]string{"foo"})
+	assert.Error(t, err)
 }
 
 func Test_findFiles(t *testing.T) {
-	path, err := findTable("TestTable", dotSlash+"Test")
+	path, err := findTable("testtable", "Test")
 	assert.NoError(t, err)
 	assert.Equal(t, filepath.FromSlash("Test/TestTable.md"), path)
 }
 
 func Test_findFiles_subDir(t *testing.T) {
-	path, err := findTable("SubTestTable", dotSlash+"Test")
+	path, err := findTable("subtesttable", "Test")
 	assert.NoError(t, err)
 	assert.Equal(t, filepath.FromSlash("Test/testdir/SubTestTable.md"), path)
 }
 
 func Test_findFiles_specifyPath(t *testing.T) {
-	path, err := findTable(filepath.FromSlash("testdir/SubTestTable"), dotSlash+"Test")
+	path, err := findTable(filepath.FromSlash("testdir/subtesttable"), "Test")
 	assert.NoError(t, err)
 	assert.Equal(t, filepath.FromSlash("Test/testdir/SubTestTable.md"), path)
 
-	path, err = findTable(filepath.FromSlash("Test/testdir/SubTestTable"), dotSlash+"Test")
+	path, err = findTable(filepath.FromSlash("test/testdir/subtesttable"), "Test")
 	assert.NoError(t, err)
 	assert.Equal(t, filepath.FromSlash("Test/testdir/SubTestTable.md"), path)
-}
-
-func Test_findFiles_caseInsensitive(t *testing.T) {
-	path, err := findTable("testtable", dotSlash+"Test")
-	assert.NoError(t, err)
-	assert.Equal(t, filepath.FromSlash("Test/TestTable.md"), path)
 }
 
 func Test_findFiles_BadName(t *testing.T) {
-	path, err := findTable("I_Dont_Exist", dotSlash+"Test")
+	path, err := findTable("I_Dont_Exist", "Test")
 	assert.Error(t, err)
 	assert.Empty(t, path)
 }
 
 func Test_findFiles_EmptyName(t *testing.T) {
-	path, err := findTable("", dotSlash+"Test")
+	path, err := findTable("", "Test")
 	assert.Error(t, err)
 	assert.Empty(t, path)
 }
