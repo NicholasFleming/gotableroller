@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -102,4 +104,20 @@ func Test_linkedTables(t *testing.T) {
 		}
 	}
 	assert.True(t, found)
+}
+
+func Test_parseMarkdownTable(t *testing.T) {
+	file, _ := os.Open(filepath.FromSlash("Test/TestTableTable.md"))
+	defer file.Close()
+	actual, err := readMarkdownTable(bufio.NewScanner(file))
+	assert.NoError(t, err)
+	assert.Equal(t, [][]string{{" roll  ", " result  "}, {" 1-6   ", " result1 "}, {" 7-10  ", " result2 "}, {" 13-20 ", " result3 "}}, actual)
+}
+
+func Test_rollOnTable(t *testing.T) {
+	file, _ := os.Open(filepath.FromSlash("Test/TestTableTable.md"))
+	defer file.Close()
+	table, _ := readMarkdownTable(bufio.NewScanner(file))
+	result, err := rollOnTable(table)
+	fmt.Printf("result: %s, err: %v\n", result, err)
 }

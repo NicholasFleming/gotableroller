@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -164,4 +165,39 @@ func contains[T comparable](ts []T, t T) bool {
 		}
 	}
 	return false
+}
+
+func readMarkdownTable(scanner *bufio.Scanner) (table [][]string, err error) {
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.HasPrefix(line, "|") && !strings.HasPrefix(line, "|--") {
+			table = append(table, strings.Split(line, "|")[1:3])
+		}
+	}
+	return table, nil
+}
+
+func rollOnTable(table [][]string) (result string, err error) {
+	rand.Seed(time.Now().UnixNano())
+	roll := rand.Intn(len(table)) // this is wrong, it should go from 1 to max of the last range
+	rowRangePattern := regexp.MustCompile(`(\d+).(\d+)`)
+	for _, row := range table {
+		rowRange := rowRangePattern.FindAllStringSubmatch(row[0], -1)
+		if len(rowRange) > 0 {
+			min, err := strconv.Atoi(rowRange[0][1])
+			if err != nil {
+				return "", fmt.Errorf("Error parsing table value min roll range, row: %s, Error: %w", row[0], err)
+			}
+			max, err := strconv.Atoi(rowRange[0][2])
+			if err != nil {
+				return "", fmt.Errorf("Error parsing table value max roll range, row: %s, Error: %w", row[0], err)
+			}
+			fmt.Printf("Min: %d, Max: %d, Roll: %d", min, max, roll)
+			if roll >= min && roll <= max {
+				result = row[1]
+				break
+			}
+		}
+	}
+	return result, nil
 }
