@@ -7,18 +7,20 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
+
+	"IPutOatsInGoats/gotableroller/src/rollabletable"
 )
 
-//
 // TODO
 // rename project to markdownTableRoller
-// handle number ranges eg 1-4, 5-6 for varying probabilities, probably with table syntax
-// handle tables with same name in multiple directories. print paths and one random selection?
-// update README
-//
+// Monsters return nothing
+var (
+	rowRangePattern  = regexp.MustCompile(`(\d+).(\d+)`)      // matches roll ranges like '5-12' and captures the numbers as groups
+	markdownListItem = regexp.MustCompile(`^(\d+\. |\* )`)    // identifies a line as a markdown list item, ie. '1. ' or '* '
+	linkMatcher      = regexp.MustCompile(`\[.+?\]\((.+?)\)`) // matches markdown links like '[Link Label](path/to/table)' with a group for 'path/to/table'
+)
 
 func main() {
 	args := os.Args
@@ -26,20 +28,38 @@ func main() {
 	query, err := parseArgs(args)
 	checkError(err, "Bad command argument")
 
+	rollTable := createRollableTable(query)
+	rand.Seed(time.Now().UnixNano())
+	result := rollTable.Roll()
+	for len(linkMatcher.FindStringSubmatch(result)) != 0 {
+		link := getLinkFromResult(result)
+		subTable := createRollableTable(link[1])
+		subResult := subTable.Roll()
+		result = strings.Replace(result, link[0], subResult, 1)
+	}
+	fmt.Println(result)
+
+}
+
+func getLinkFromResult(result string) []string {
+	query := linkMatcher.FindStringSubmatch(result)
+	return query
+}
+
+func createRollableTable(query string) rollabletable.RollableTable {
 	query = standardizeSearch(query)
 
 	path, err := findTable(query, ".")
 	checkError(err, "Error finding file")
-
 	file, err := os.Open(path)
 	checkError(err, "Error reading file")
 	defer file.Close()
 
-	tableValues, err := parseTableValues(file)
-	checkError(err, "Error parsing table values")
+	scanner := bufio.NewScanner(file)
+	rollTable, err := rollabletable.ParseRollableTable(*scanner)
+	checkError(err, "Error parsing table")
 
-	result := rollTheDice(tableValues)
-	fmt.Println(result)
+	return rollTable
 }
 
 func parseArgs(args []string) (query string, err error) {
@@ -75,10 +95,13 @@ func findTable(search string, dir string) (tablePath string, err error) {
 	}
 
 	err = filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
+		checkError(err, "hereIAM")
 		if tablePath != "" {
 			return nil
 		}
-		if strings.Contains(strings.ToLower(path), search) {
+		fmt.Println("Path: " + path + ", Search: " + search)
+		fmt.Println(strings.EqualFold(path, search))
+		if strings.EqualFold(path, search) || strings.Contains(strings.ToLower(path), fmt.Sprintf("%c%s", os.PathSeparator, search)) {
 			tablePath = path
 			return nil
 		}
@@ -90,29 +113,7 @@ func findTable(search string, dir string) (tablePath string, err error) {
 	return tablePath, err
 }
 
-func parseTableValues(tableFile *os.File) ([]string, error) {
-	scanner := bufio.NewScanner(tableFile)
-	var tableValues []string
-	for scanner.Scan() {
-		markdownListItem, err := regexp.Compile(`^(\d+\. |\* )`)
-		checkError(err, "Error parsing table values")
-		isValue := markdownListItem.Match([]byte(scanner.Text()))
-		if isValue {
-			noPrefix := markdownListItem.ReplaceAllString(scanner.Text(), "")
-			str := checkForSubQueries(noPrefix)
-			tableValues = append(tableValues, str)
-		}
-	}
-	if len(tableValues) == 0 {
-		return nil, fmt.Errorf("No table values found")
-	}
-	return tableValues, nil
-}
-
 func checkForSubQueries(tableRow string) string {
-	// Ex. Matches markdown links like [Link Label](path/to/table) With subgroups: [1] = path/to/table
-	linkMatcher := regexp.MustCompile(`\[.+?\]\((.+?)\)`)
-
 	subQueries := linkMatcher.FindAllStringSubmatch(tableRow, -1)
 	for _, subQueryLink := range subQueries {
 		subQuery := standardizeSearch(subQueryLink[1])
@@ -126,20 +127,15 @@ func checkForSubQueries(tableRow string) string {
 			fmt.Printf("Couldn't read file for sub query: %s, Error: %v\n", subQuery, err)
 			return tableRow
 		}
-		subQueryValues, err := parseTableValues(subQueryFileReader)
+		subQueryValues, err := rollabletable.ParseRollableTable(*bufio.NewScanner(subQueryFileReader))
 		if err != nil {
 			fmt.Printf("Couldn't parse values for sub query: %s, Error: %s\n", subQuery, err)
 			return tableRow
 		}
-		subQueryResult := rollTheDice(subQueryValues)
+		subQueryResult := subQueryValues.Roll()
 		tableRow = strings.Replace(tableRow, subQueryLink[0], subQueryResult, 1)
 	}
 	return tableRow
-}
-
-func rollTheDice(tableValues []string) string {
-	rand.Seed(time.Now().UnixNano())
-	return tableValues[rand.Intn(len(tableValues))]
 }
 
 func checkError(err error, msg string) {
@@ -165,39 +161,4 @@ func contains[T comparable](ts []T, t T) bool {
 		}
 	}
 	return false
-}
-
-func readMarkdownTable(scanner *bufio.Scanner) (table [][]string, err error) {
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.HasPrefix(line, "|") && !strings.HasPrefix(line, "|--") {
-			table = append(table, strings.Split(line, "|")[1:3])
-		}
-	}
-	return table, nil
-}
-
-func rollOnTable(table [][]string) (result string, err error) {
-	rand.Seed(time.Now().UnixNano())
-	roll := rand.Intn(len(table)) // this is wrong, it should go from 1 to max of the last range
-	rowRangePattern := regexp.MustCompile(`(\d+).(\d+)`)
-	for _, row := range table {
-		rowRange := rowRangePattern.FindAllStringSubmatch(row[0], -1)
-		if len(rowRange) > 0 {
-			min, err := strconv.Atoi(rowRange[0][1])
-			if err != nil {
-				return "", fmt.Errorf("Error parsing table value min roll range, row: %s, Error: %w", row[0], err)
-			}
-			max, err := strconv.Atoi(rowRange[0][2])
-			if err != nil {
-				return "", fmt.Errorf("Error parsing table value max roll range, row: %s, Error: %w", row[0], err)
-			}
-			fmt.Printf("Min: %d, Max: %d, Roll: %d", min, max, roll)
-			if roll >= min && roll <= max {
-				result = row[1]
-				break
-			}
-		}
-	}
-	return result, nil
 }

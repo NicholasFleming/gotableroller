@@ -1,3 +1,3 @@
-* [CivilizedNPCs](NPCs/CivilizedNPCs)
-* [UnderworldNPCs](NPCs/UnderworldNPCs)
-* [WildernessNPCs](NPCs/WildernessNPCs)
+* Civilized: [CivilizedNPCs](NPCs/CivilizedNPCs)
+* Underworld: [UnderworldNPCs](NPCs/UnderworldNPCs)
+* Wilderness: [WildernessNPCs](NPCs/WildernessNPCs)
