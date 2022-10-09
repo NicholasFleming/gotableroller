@@ -99,8 +99,6 @@ func findTable(search string, dir string) (tablePath string, err error) {
 		if tablePath != "" {
 			return nil
 		}
-		fmt.Println("Path: " + path + ", Search: " + search)
-		fmt.Println(strings.EqualFold(path, search))
 		if strings.EqualFold(path, search) || strings.Contains(strings.ToLower(path), fmt.Sprintf("%c%s", os.PathSeparator, search)) {
 			tablePath = path
 			return nil
