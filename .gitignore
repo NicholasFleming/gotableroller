@@ -1,0 +1,5 @@
+
+MazeRatsTables/.obsidian/*
+*.exe
+*.bat
+MAKEFILE
