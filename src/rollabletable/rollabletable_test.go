@@ -2,14 +2,27 @@ package rollabletable
 
 import (
 	"bufio"
+	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
+var foo string = "foo"
+
+func TestMain(m *testing.M) {
+	for i := 1; i < 100; i++ {
+		foo = "Run number " + strconv.Itoa(i)
+		m.Run()
+
+	}
+}
+
 func Test_isRollableMDList(t *testing.T) {
+	fmt.Println("Foo: " + foo)
 	assert.True(t, isRollableMDList("* foo"))
 	assert.True(t, isRollableMDList("1. foo"))
 	assert.False(t, isRollableMDList("foo"))

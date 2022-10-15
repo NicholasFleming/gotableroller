@@ -10,12 +10,10 @@ import (
 	"strings"
 	"time"
 
+	"IPutOatsInGoats/gotableroller/src"
 	"IPutOatsInGoats/gotableroller/src/rollabletable"
 )
 
-// TODO
-// rename project to markdownTableRoller
-// Monsters return nothing
 var (
 	rowRangePattern  = regexp.MustCompile(`(\d+).(\d+)`)      // matches roll ranges like '5-12' and captures the numbers as groups
 	markdownListItem = regexp.MustCompile(`^(\d+\. |\* )`)    // identifies a line as a markdown list item, ie. '1. ' or '* '
@@ -63,19 +61,50 @@ func createRollableTable(query string) rollabletable.RollableTable {
 }
 
 func parseArgs(args []string) (query string, err error) {
+
 	if len(args) < 2 {
 		return "", fmt.Errorf("Please provide a table name")
 	}
 
-	if len(args) > 2 {
-		return "", fmt.Errorf("Unknown options: %v", args[2:])
-	}
-
+	// TODO use flags
 	if contains([]string{"-h", "--h", "-help", "--help", "\\h", "\\help"}, args[1]) {
 		printUsageAndExit()
 	}
 
+	if contains([]string{"-ls", "--ls", "-list", "--list", "\\ls", "\\list"}, args[1]) {
+		if len(args) > 2 {
+			query = args[2]
+		}
+		printAvailableTablesAndExit(query)
+	}
+
 	return args[1], nil
+}
+
+func printAvailableTablesAndExit(query string) {
+	printDirectory(".", 0, query)
+	os.Exit(0)
+}
+
+func printDirectory(dir string, depth int, query string) {
+	files, err := os.ReadDir(dir)
+	checkError(err, "Error reading directory")
+	var directories []os.DirEntry
+
+	for _, file := range files {
+		if file.IsDir() && !strings.HasPrefix(file.Name(), ".") {
+			directories = append(directories, file)
+		} else if strings.HasSuffix(file.Name(), ".md") {
+			if strings.Contains(strings.ToLower(file.Name()), query) {
+				fmt.Println(src.Colorize(src.Yellow, strings.Repeat("-", depth)+file.Name()))
+			}
+		}
+	}
+
+	for _, subDir := range directories {
+		fmt.Println(src.Colorize(src.Purple, strings.Repeat("-", depth)+dir+string(filepath.Separator)+subDir.Name()))
+		printDirectory(dir+string(filepath.Separator)+subDir.Name(), depth+1, query)
+	}
 }
 
 func standardizeSearch(search string) string {

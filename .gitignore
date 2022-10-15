@@ -2,4 +2,7 @@
 MazeRatsTables/.obsidian/*
 *.exe
 *.bat
-MAKEFILE
+Makefile
+.idea/*
+/roll
+*.DS_Store
