@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	rowRangePattern  = regexp.MustCompile(`(\d+).(\d+)`)   // matches roll ranges like '5-12' and captures the numbers as groups
+	rowRangePattern  = regexp.MustCompile(`(\d+)-(\d+)`)   // matches roll ranges like '5-12' and captures the numbers as groups
 	markdownListItem = regexp.MustCompile(`^(\d+\. |\* )`) // identifies a line as a markdown list item, ie. '1. ' or '* '
 )
 
