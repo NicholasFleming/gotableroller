@@ -27,7 +27,7 @@ func main() {
 	checkError(err, "Bad command argument")
 
 	rollTable := createRollableTable(query)
-	fmt.Println(rollTable.AsMDTable())
+
 	rand.Seed(time.Now().UnixNano())
 	result := rollTable.Roll()
 	for len(linkMatcher.FindStringSubmatch(result)) != 0 {
