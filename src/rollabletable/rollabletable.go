@@ -38,13 +38,21 @@ func (rt RollableTable) AsMDTable() string {
 }
 
 func ParseRollableTable(scanner bufio.Scanner) (RollableTable, error) {
+	var doc []string
 	for i := 0; i < 5; i++ { // Only check first couple lines before moving on
 		scanner.Scan()
+		doc = append(doc, scanner.Text())
 		switch {
 		case isRollableMDList(scanner.Text()):
-			return fromMDList(parseMDList(scanner)), nil
+			for scanner.Scan() {
+				doc = append(doc, scanner.Text())
+			}
+			return fromMDList(parseMDList(doc)), nil
 		case isRollableMDTable(scanner.Text()):
-			return fromMDTable(parseMDTable(scanner))
+			for scanner.Scan() {
+				doc = append(doc, scanner.Text())
+			}
+			return fromMDTable(parseMDTable(doc))
 		}
 	}
 	return RollableTable{}, fmt.Errorf("Not a Rollable Table")
@@ -108,14 +116,9 @@ func isRollableMDTable(s string) bool {
 	return false
 }
 
-func parseMDTable(scanner bufio.Scanner) MDTable {
+func parseMDTable(contents []string) MDTable {
 	var mdTable MDTable
-	line := scanner.Text()
-	if strings.HasPrefix(line, "|") && rowRangePattern.MatchString(line) {
-		mdTable = append(mdTable, strings.Split(line, "|")[1:3])
-	}
-	for scanner.Scan() {
-		line := scanner.Text()
+	for _, line := range contents {
 		if strings.HasPrefix(line, "|") && rowRangePattern.MatchString(line) {
 			mdTable = append(mdTable, strings.Split(line, "|")[1:3])
 		}
@@ -129,14 +132,11 @@ func isRollableMDList(s string) bool {
 	return markdownListItem.MatchString(s)
 }
 
-func parseMDList(scanner bufio.Scanner) MDList {
+func parseMDList(contents []string) MDList {
 	var mdList MDList
-	if markdownListItem.Match([]byte(scanner.Text())) {
-		mdList = append(mdList, markdownListItem.ReplaceAllString(scanner.Text(), ""))
-	}
-	for scanner.Scan() {
-		if markdownListItem.Match([]byte(scanner.Text())) {
-			mdList = append(mdList, markdownListItem.ReplaceAllString(scanner.Text(), ""))
+	for _, line := range contents {
+		if markdownListItem.Match([]byte(line)) {
+			mdList = append(mdList, markdownListItem.ReplaceAllString(line, ""))
 		}
 	}
 	return mdList

@@ -32,20 +32,20 @@ func Test_isRollableMDList(t *testing.T) {
 }
 
 func Test_parseRollableMDList_unordered(t *testing.T) {
-	scanner := bufio.NewScanner(strings.NewReader("* foo\n* bar\n* baz"))
-	list := parseMDList(*scanner)
+	s := []string{"* foo", "* bar", "* baz"}
+	list := parseMDList(s)
 	assert.Equal(t, MDList{"foo", "bar", "baz"}, list)
 }
 
 func Test_parseRollableMDList_ordered(t *testing.T) {
-	scanner := bufio.NewScanner(strings.NewReader("1. foo\n2. bar\n3. baz"))
-	list := parseMDList(*scanner)
+	s := []string{"1. foo", "2. bar", "3. baz"}
+	list := parseMDList(s)
 	assert.Equal(t, MDList{"foo", "bar", "baz"}, list)
 }
 
 func Test_parseRollableMDList_badFormat(t *testing.T) {
-	scanner := bufio.NewScanner(strings.NewReader("- foo\n2 bar\nbaz"))
-	list := parseMDList(*scanner)
+	s := []string{"- foo", "2 bar", "baz"}
+	list := parseMDList(s)
 	var emptyList MDList
 	assert.Equal(t, emptyList, list)
 }
@@ -63,8 +63,8 @@ func Test_isRollableMDTable(t *testing.T) {
 }
 
 func Test_parseRollableMDTable(t *testing.T) {
-	scanner := bufio.NewScanner(strings.NewReader("| foo | bar |\n|---|---|\n| 1-3 | A |\n| 4-6 | B |"))
-	list := parseMDTable(*scanner)
+	s := []string{"| foo | bar |", "|---|---|", "| 1-3 | A |", "| 4-6 | B |"}
+	list := parseMDTable(s)
 	assert.Equal(t, MDTable{{" 1-3 ", " A "}, {" 4-6 ", " B "}}, list)
 }
 
