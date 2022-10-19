@@ -2,6 +2,7 @@ package rollabletable
 
 import (
 	"bufio"
+	"bytes"
 	"fmt"
 	"math/rand"
 	"regexp"
@@ -26,6 +27,14 @@ func (rt RollableTable) Roll() string {
 		return rt.table[roll]
 	}
 	return rt.table[i]
+}
+
+func (rt RollableTable) AsMDTable() string {
+	var table bytes.Buffer
+	for k, v := range rt.table {
+		table.WriteString(fmt.Sprintf("| %d | %s |\n", k, v))
+	}
+	return table.String()
 }
 
 func ParseRollableTable(scanner bufio.Scanner) (RollableTable, error) {

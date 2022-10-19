@@ -27,6 +27,7 @@ func main() {
 	checkError(err, "Bad command argument")
 
 	rollTable := createRollableTable(query)
+	fmt.Println(rollTable.AsMDTable())
 	rand.Seed(time.Now().UnixNano())
 	result := rollTable.Roll()
 	for len(linkMatcher.FindStringSubmatch(result)) != 0 {
@@ -138,31 +139,6 @@ func findTable(search string, dir string) (tablePath string, err error) {
 		return "", fmt.Errorf("Table not found: %s", search)
 	}
 	return tablePath, err
-}
-
-func checkForSubQueries(tableRow string) string {
-	subQueries := linkMatcher.FindAllStringSubmatch(tableRow, -1)
-	for _, subQueryLink := range subQueries {
-		subQuery := standardizeSearch(subQueryLink[1])
-		subQueryFile, err := findTable(subQuery, ".")
-		if err != nil {
-			fmt.Printf("Couldn't find table for sub query: %s, Error: %v\n", subQuery, err)
-			return tableRow
-		}
-		subQueryFileReader, err := os.Open(subQueryFile)
-		if err != nil {
-			fmt.Printf("Couldn't read file for sub query: %s, Error: %v\n", subQuery, err)
-			return tableRow
-		}
-		subQueryValues, err := rollabletable.ParseRollableTable(*bufio.NewScanner(subQueryFileReader))
-		if err != nil {
-			fmt.Printf("Couldn't parse values for sub query: %s, Error: %s\n", subQuery, err)
-			return tableRow
-		}
-		subQueryResult := subQueryValues.Roll()
-		tableRow = strings.Replace(tableRow, subQueryLink[0], subQueryResult, 1)
-	}
-	return tableRow
 }
 
 func checkError(err error, msg string) {
