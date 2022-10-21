@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
@@ -13,20 +12,18 @@ import (
 var (
 	rowRangePattern  = regexp.MustCompile(`(\d+)-(\d+)`)   // matches roll ranges like '5-12' and captures the numbers as groups
 	markdownListItem = regexp.MustCompile(`^(\d+\. |\* )`) // identifies a line as a markdown list item, ie. '1. ' or '* '
+	diePattern       = regexp.MustCompile(`(\d+)d(\d+)`)
 )
 
 type RollableTable struct {
 	table map[int]string
 	max   int
+	dice  Dice
 }
 
 func (rt RollableTable) Roll() string {
-	roll := rand.Intn(rt.max) + 1
-	i, err := strconv.Atoi(rt.table[roll])
-	if err != nil {
-		return rt.table[roll]
-	}
-	return rt.table[i]
+	result := rt.dice.Roll()
+	return rt.table[result]
 }
 
 func (rt RollableTable) AsMDTable() string {
@@ -62,6 +59,10 @@ func fromMDList(list MDList) RollableTable {
 	var rollableTable RollableTable
 	rollableTable.table = make(map[int]string)
 	rollableTable.max = len(list)
+	rollableTable.dice = Dice{
+		Count: 1,
+		Sides: len(list),
+	}
 	for i, line := range list {
 		rollableTable.table[i+1] = line
 	}
@@ -73,35 +74,49 @@ func fromMDTable(table MDTable) (RollableTable, error) {
 	var rollableTable RollableTable
 	rollableTable.table = make(map[int]string)
 	for _, row := range table {
-		minRange, maxRange, value, err := parseMDTableRow(row)
-		if err != nil {
-			return RollableTable{}, fmt.Errorf("Error in Table Format: %w", err)
-		}
-		rollableTable.table[minRange] = value
-		for i := minRange + 1; i <= maxRange; i++ {
-			rollableTable.table[i] = strconv.Itoa(minRange)
-		}
-		if rollableTable.max < maxRange {
-			rollableTable.max = maxRange
+		minRange, maxRange, value, ok := parseMDTableRow(row)
+		if ok {
+			rollableTable.table[minRange] = value
+			for i := minRange + 1; i <= maxRange; i++ {
+				rollableTable.table[i] = strconv.Itoa(minRange)
+			}
+			if rollableTable.max < maxRange {
+				rollableTable.max = maxRange
+			}
 		}
 	}
+	if rollableTable.max == 0 || len(rollableTable.table) == 0 {
+		return rollableTable, fmt.Errorf("Table not parsable as Rollable Table")
+	}
+	die, dieDefined := getDiceFromString(table[0][0])
+	if !dieDefined {
+		die = Dice{
+			Count: 1,
+			Sides: rollableTable.max,
+		}
+	}
+	rollableTable.dice = die
 	return rollableTable, nil
 }
 
-func parseMDTableRow(row []string) (min int, max int, value string, err error) {
+func parseMDTableRow(row []string) (min int, max int, value string, ok bool) {
 	rowRange := rowRangePattern.FindAllStringSubmatch(row[0], -1)
-	if len(rowRange) != 1 || len(rowRange[0]) != 3 {
-		return 0, 0, "", fmt.Errorf("Bad row range value: %v", row[0])
+	if len(rowRange) == 1 && len(rowRange[0]) == 3 {
+		min, err := strconv.Atoi(rowRange[0][1])
+		if err != nil {
+			return 0, 0, "", false
+		}
+		max, err = strconv.Atoi(rowRange[0][2])
+		if err != nil {
+			return 0, 0, "", false
+		}
+		return min, max, row[1], true
 	}
-	min, err = strconv.Atoi(rowRange[0][1])
-	if err != nil {
-		return 0, 0, "", fmt.Errorf("Error parsing table value min roll range, row: %s, Error: %w", row[0], err)
+	num, err := strconv.Atoi(strings.TrimSpace(row[0]))
+	if err == nil {
+		return num, num, row[1], true
 	}
-	max, err = strconv.Atoi(rowRange[0][2])
-	if err != nil {
-		return 0, 0, "", fmt.Errorf("Error parsing table value max roll range, row: %s, Error: %w", row[0], err)
-	}
-	return min, max, row[1], nil
+	return 0, 0, "", false
 }
 
 type MDTable [][]string
@@ -109,7 +124,7 @@ type MDTable [][]string
 func isRollableMDTable(s string) bool {
 	if strings.HasPrefix(s, "|") {
 		columns := strings.Count(s, "|") - strings.Count(s, `\|`)
-		if columns == 3 && rowRangePattern.MatchString(strings.Split(s, "|")[1]) {
+		if columns == 3 {
 			return true
 		}
 	}
@@ -119,7 +134,7 @@ func isRollableMDTable(s string) bool {
 func parseMDTable(contents []string) MDTable {
 	var mdTable MDTable
 	for _, line := range contents {
-		if strings.HasPrefix(line, "|") && rowRangePattern.MatchString(line) {
+		if strings.HasPrefix(line, "|") && strings.HasSuffix(line, "|") {
 			mdTable = append(mdTable, strings.Split(line, "|")[1:3])
 		}
 	}
