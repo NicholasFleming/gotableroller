@@ -29,6 +29,7 @@ func main() {
 	rollTable := createRollableTable(query)
 
 	rand.Seed(time.Now().UnixNano())
+
 	result := rollTable.Roll()
 	for len(linkMatcher.FindStringSubmatch(result)) != 0 {
 		link := getLinkFromResult(result)

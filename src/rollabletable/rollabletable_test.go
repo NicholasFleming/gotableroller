@@ -126,8 +126,8 @@ func Test_ParseRollableTable_complexTable(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, map[int]string{2: " foo ", 3: " bar ", 4: "3", 5: "3", 6: "3", 7: "3", 8: " baz ", 9: " bing ", 10: "9", 11: "9", 12: "9"}, table.table)
 	assert.Equal(t, 12, table.max)
-	assert.Equal(t, 2, table.dice.Count)
-	assert.Equal(t, 6, table.dice.Sides)
+	assert.Equal(t, 2, table.dice.count)
+	assert.Equal(t, 6, table.dice.sides)
 }
 
 func Test_parseDiceFromMDTable(t *testing.T) {
@@ -135,13 +135,13 @@ func Test_parseDiceFromMDTable(t *testing.T) {
 	rollableTable, err := fromMDTable(table)
 	assert.Nil(t, err)
 	assert.NotNil(t, rollableTable.dice)
-	assert.Equal(t, 2, rollableTable.dice.Count)
-	assert.Equal(t, 20, rollableTable.dice.Sides)
+	assert.Equal(t, 2, rollableTable.dice.count)
+	assert.Equal(t, 20, rollableTable.dice.sides)
 	assert.Equal(t, 20, rollableTable.max)
 }
 
 func Test_Roll(t *testing.T) {
-	table := RollableTable{map[int]string{1: "foo", 2: "bar", 3: "baz"}, 3, Dice{1, 3}}
+	table := RollableTable{map[int]string{1: "foo", 2: "bar", 3: "baz"}, 3, Dice{1, 3, AdditionInterpreter{}}}
 	match, err := regexp.Match(`foo|bar|baz`, []byte(table.Roll()))
 	assert.NoError(t, err)
 	assert.True(t, match)
@@ -149,8 +149,9 @@ func Test_Roll(t *testing.T) {
 
 func Test_Roll_WithDice1d3(t *testing.T) {
 	table := RollableTable{map[int]string{1: "foo", 2: "bar", 3: "baz", 4: "bing", 5: "bong"}, 5, Dice{
-		Count: 1,
-		Sides: 3,
+		count:           1,
+		sides:           3,
+		DiceInterpreter: AdditionInterpreter{},
 	}}
 	match, err := regexp.Match(`foo|bar|baz`, []byte(table.Roll()))
 	assert.NoError(t, err)
@@ -159,8 +160,9 @@ func Test_Roll_WithDice1d3(t *testing.T) {
 
 func Test_Roll_WithDice2d2(t *testing.T) {
 	table := RollableTable{map[int]string{1: "foo", 2: "bar", 3: "baz", 4: "bing", 5: "bong"}, 3, Dice{
-		Count: 2,
-		Sides: 2,
+		count:           2,
+		sides:           2,
+		DiceInterpreter: AdditionInterpreter{},
 	}}
 	match, err := regexp.Match(`bar|baz|bing`, []byte(table.Roll()))
 	assert.NoError(t, err)

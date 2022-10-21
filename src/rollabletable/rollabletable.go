@@ -10,9 +10,8 @@ import (
 )
 
 var (
-	rowRangePattern  = regexp.MustCompile(`(\d+)-(\d+)`)   // matches roll ranges like '5-12' and captures the numbers as groups
-	markdownListItem = regexp.MustCompile(`^(\d+\. |\* )`) // identifies a line as a markdown list item, ie. '1. ' or '* '
-	diePattern       = regexp.MustCompile(`(\d+)d(\d+)`)
+	rowRangePattern  = regexp.MustCompile(`(\d+)[-|–](\d+)`) // matches roll ranges like '5-12' and captures the numbers as groups
+	markdownListItem = regexp.MustCompile(`^(\d+\. |\* )`)   // identifies a line as a markdown list item, ie. '1. ' or '* '
 )
 
 type RollableTable struct {
@@ -23,7 +22,12 @@ type RollableTable struct {
 
 func (rt RollableTable) Roll() string {
 	result := rt.dice.Roll()
-	return rt.table[result]
+
+	index, err := strconv.Atoi(rt.table[result])
+	if err != nil {
+		return rt.table[result]
+	}
+	return rt.table[index]
 }
 
 func (rt RollableTable) AsMDTable() string {
@@ -60,8 +64,9 @@ func fromMDList(list MDList) RollableTable {
 	rollableTable.table = make(map[int]string)
 	rollableTable.max = len(list)
 	rollableTable.dice = Dice{
-		Count: 1,
-		Sides: len(list),
+		count:           1,
+		sides:           len(list),
+		DiceInterpreter: AdditionInterpreter{},
 	}
 	for i, line := range list {
 		rollableTable.table[i+1] = line
@@ -86,13 +91,14 @@ func fromMDTable(table MDTable) (RollableTable, error) {
 		}
 	}
 	if rollableTable.max == 0 || len(rollableTable.table) == 0 {
-		return rollableTable, fmt.Errorf("Table not parsable as Rollable Table")
+		return rollableTable, fmt.Errorf("Table not parsable as Rollable Table, table max: %d, table length: %d", rollableTable.max, len(rollableTable.table))
 	}
-	die, dieDefined := getDiceFromString(table[0][0])
+	die, dieDefined := parseDiceFromString(table[0][0])
 	if !dieDefined {
 		die = Dice{
-			Count: 1,
-			Sides: rollableTable.max,
+			count:           1,
+			sides:           rollableTable.max,
+			DiceInterpreter: AdditionInterpreter{},
 		}
 	}
 	rollableTable.dice = die
@@ -101,13 +107,16 @@ func fromMDTable(table MDTable) (RollableTable, error) {
 
 func parseMDTableRow(row []string) (min int, max int, value string, ok bool) {
 	rowRange := rowRangePattern.FindAllStringSubmatch(row[0], -1)
+
 	if len(rowRange) == 1 && len(rowRange[0]) == 3 {
 		min, err := strconv.Atoi(rowRange[0][1])
 		if err != nil {
+			fmt.Printf("Error parsing min range, %v, %s\n", row, err)
 			return 0, 0, "", false
 		}
 		max, err = strconv.Atoi(rowRange[0][2])
 		if err != nil {
+			fmt.Printf("Error parsing max range, %v, %s\n", row, err)
 			return 0, 0, "", false
 		}
 		return min, max, row[1], true
