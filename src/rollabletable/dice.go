@@ -1,7 +1,6 @@
 package rollabletable
 
 import (
-	"fmt"
 	"math/rand"
 	"regexp"
 	"strconv"
@@ -53,8 +52,6 @@ func (d Dice) rollAllDice() DieResult {
 }
 
 func (d Dice) Roll() int {
-	fmt.Printf("Rolling Dice: %d, %d, %T\n", d.count, d.sides, d.DiceInterpreter)
-
 	return d.DiceInterpreter.interpret(d.rollAllDice())
 }
 
