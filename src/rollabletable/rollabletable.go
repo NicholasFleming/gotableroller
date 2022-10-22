@@ -4,29 +4,30 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"math/rand"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
 var (
-	rowRangePattern  = regexp.MustCompile(`(\d+)-(\d+)`)   // matches roll ranges like '5-12' and captures the numbers as groups
-	markdownListItem = regexp.MustCompile(`^(\d+\. |\* )`) // identifies a line as a markdown list item, ie. '1. ' or '* '
+	rowRangePattern  = regexp.MustCompile(`(\d+)[-|–](\d+)`) // matches roll ranges like '5-12' and captures the numbers as groups
+	markdownListItem = regexp.MustCompile(`^(\d+\. |\* )`)   // identifies a line as a markdown list item, ie. '1. ' or '* '
 )
 
 type RollableTable struct {
 	table map[int]string
 	max   int
+	dice  Dice
 }
 
 func (rt RollableTable) Roll() string {
-	roll := rand.Intn(rt.max) + 1
-	i, err := strconv.Atoi(rt.table[roll])
+	result := rt.dice.Roll()
+
+	index, err := strconv.Atoi(rt.table[result])
 	if err != nil {
-		return rt.table[roll]
+		return rt.table[result]
 	}
-	return rt.table[i]
+	return rt.table[index]
 }
 
 func (rt RollableTable) AsMDTable() string {
@@ -38,13 +39,21 @@ func (rt RollableTable) AsMDTable() string {
 }
 
 func ParseRollableTable(scanner bufio.Scanner) (RollableTable, error) {
+	var doc []string
 	for i := 0; i < 5; i++ { // Only check first couple lines before moving on
 		scanner.Scan()
+		doc = append(doc, scanner.Text())
 		switch {
 		case isRollableMDList(scanner.Text()):
-			return fromMDList(parseMDList(scanner)), nil
+			for scanner.Scan() {
+				doc = append(doc, scanner.Text())
+			}
+			return fromMDList(parseMDList(doc)), nil
 		case isRollableMDTable(scanner.Text()):
-			return fromMDTable(parseMDTable(scanner))
+			for scanner.Scan() {
+				doc = append(doc, scanner.Text())
+			}
+			return fromMDTable(parseMDTable(doc))
 		}
 	}
 	return RollableTable{}, fmt.Errorf("Not a Rollable Table")
@@ -54,6 +63,11 @@ func fromMDList(list MDList) RollableTable {
 	var rollableTable RollableTable
 	rollableTable.table = make(map[int]string)
 	rollableTable.max = len(list)
+	rollableTable.dice = Dice{
+		count:           1,
+		sides:           len(list),
+		DiceInterpreter: AdditionInterpreter{},
+	}
 	for i, line := range list {
 		rollableTable.table[i+1] = line
 	}
@@ -65,35 +79,53 @@ func fromMDTable(table MDTable) (RollableTable, error) {
 	var rollableTable RollableTable
 	rollableTable.table = make(map[int]string)
 	for _, row := range table {
-		minRange, maxRange, value, err := parseMDTableRow(row)
-		if err != nil {
-			return RollableTable{}, fmt.Errorf("Error in Table Format: %w", err)
-		}
-		rollableTable.table[minRange] = value
-		for i := minRange + 1; i <= maxRange; i++ {
-			rollableTable.table[i] = strconv.Itoa(minRange)
-		}
-		if rollableTable.max < maxRange {
-			rollableTable.max = maxRange
+		minRange, maxRange, value, ok := parseMDTableRow(row)
+		if ok {
+			rollableTable.table[minRange] = value
+			for i := minRange + 1; i <= maxRange; i++ {
+				rollableTable.table[i] = strconv.Itoa(minRange)
+			}
+			if rollableTable.max < maxRange {
+				rollableTable.max = maxRange
+			}
 		}
 	}
+	if rollableTable.max == 0 || len(rollableTable.table) == 0 {
+		return rollableTable, fmt.Errorf("Table not parsable as Rollable Table, table max: %d, table length: %d", rollableTable.max, len(rollableTable.table))
+	}
+	die, dieDefined := parseDiceFromString(table[0][0])
+	if !dieDefined {
+		die = Dice{
+			count:           1,
+			sides:           rollableTable.max,
+			DiceInterpreter: AdditionInterpreter{},
+		}
+	}
+	rollableTable.dice = die
 	return rollableTable, nil
 }
 
-func parseMDTableRow(row []string) (min int, max int, value string, err error) {
+func parseMDTableRow(row []string) (min int, max int, value string, ok bool) {
 	rowRange := rowRangePattern.FindAllStringSubmatch(row[0], -1)
-	if len(rowRange) != 1 || len(rowRange[0]) != 3 {
-		return 0, 0, "", fmt.Errorf("Bad row range value: %v", row[0])
+
+	if len(rowRange) == 1 && len(rowRange[0]) == 3 {
+		min, err := strconv.Atoi(rowRange[0][1])
+		if err != nil {
+			fmt.Printf("Error parsing min range, %v, %s\n", row, err)
+			return 0, 0, "", false
+		}
+		max, err = strconv.Atoi(rowRange[0][2])
+		if err != nil {
+			fmt.Printf("Error parsing max range, %v, %s\n", row, err)
+			return 0, 0, "", false
+		}
+		return min, max, row[1], true
 	}
-	min, err = strconv.Atoi(rowRange[0][1])
-	if err != nil {
-		return 0, 0, "", fmt.Errorf("Error parsing table value min roll range, row: %s, Error: %w", row[0], err)
+	num, err := strconv.Atoi(strings.TrimSpace(row[0]))
+	if err == nil {
+		return num, num, row[1], true
 	}
-	max, err = strconv.Atoi(rowRange[0][2])
-	if err != nil {
-		return 0, 0, "", fmt.Errorf("Error parsing table value max roll range, row: %s, Error: %w", row[0], err)
-	}
-	return min, max, row[1], nil
+	return 0, 0, "", false
 }
 
 type MDTable [][]string
@@ -101,22 +133,17 @@ type MDTable [][]string
 func isRollableMDTable(s string) bool {
 	if strings.HasPrefix(s, "|") {
 		columns := strings.Count(s, "|") - strings.Count(s, `\|`)
-		if columns == 3 && rowRangePattern.MatchString(strings.Split(s, "|")[1]) {
+		if columns == 3 {
 			return true
 		}
 	}
 	return false
 }
 
-func parseMDTable(scanner bufio.Scanner) MDTable {
+func parseMDTable(contents []string) MDTable {
 	var mdTable MDTable
-	line := scanner.Text()
-	if strings.HasPrefix(line, "|") && rowRangePattern.MatchString(line) {
-		mdTable = append(mdTable, strings.Split(line, "|")[1:3])
-	}
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.HasPrefix(line, "|") && rowRangePattern.MatchString(line) {
+	for _, line := range contents {
+		if strings.HasPrefix(line, "|") && strings.HasSuffix(line, "|") {
 			mdTable = append(mdTable, strings.Split(line, "|")[1:3])
 		}
 	}
@@ -129,14 +156,11 @@ func isRollableMDList(s string) bool {
 	return markdownListItem.MatchString(s)
 }
 
-func parseMDList(scanner bufio.Scanner) MDList {
+func parseMDList(contents []string) MDList {
 	var mdList MDList
-	if markdownListItem.Match([]byte(scanner.Text())) {
-		mdList = append(mdList, markdownListItem.ReplaceAllString(scanner.Text(), ""))
-	}
-	for scanner.Scan() {
-		if markdownListItem.Match([]byte(scanner.Text())) {
-			mdList = append(mdList, markdownListItem.ReplaceAllString(scanner.Text(), ""))
+	for _, line := range contents {
+		if markdownListItem.Match([]byte(line)) {
+			mdList = append(mdList, markdownListItem.ReplaceAllString(line, ""))
 		}
 	}
 	return mdList
