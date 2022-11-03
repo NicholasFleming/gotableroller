@@ -88,7 +88,7 @@ func Test_parseMDTableRow(t *testing.T) {
 
 func Test_fromMDTable(t *testing.T) {
 	table := MDTable{{" 1-3 ", " A "}, {" 4-6 ", " B "}}
-	rollableTable, err := fromMDTable(table)
+	rollableTable, err := fromMDTable(table, "normaltable")
 	assert.NoError(t, err)
 	assert.Equal(t, map[int]string{1: " A ", 2: "1", 3: "1", 4: " B ", 5: "4", 6: "4"}, rollableTable.table)
 	assert.Equal(t, 6, rollableTable.max)
@@ -96,33 +96,33 @@ func Test_fromMDTable(t *testing.T) {
 
 func Test_fromMDTable_badFormat(t *testing.T) {
 	table := MDTable{{" A ", " B "}, {" bar ", " baz "}}
-	_, err := fromMDTable(table)
+	_, err := fromMDTable(table, "badformat")
 	assert.Error(t, err)
 }
 
 func Test_fromMDList(t *testing.T) {
 	list := MDList{"foo", "bar", "baz"}
-	rollableTable := fromMDList(list)
+	rollableTable := fromMDList(list, "normallist")
 	assert.Equal(t, map[int]string{1: "foo", 2: "bar", 3: "baz"}, rollableTable.table)
 	assert.Equal(t, 3, rollableTable.max)
 }
 
 func Test_ParseRollableTable_table_withRanges(t *testing.T) {
-	table, err := ParseRollableTable(*bufio.NewScanner(strings.NewReader("| foo | bar |\n|---|---|\n| 1-3 | A |\n| 4-6 | B |")))
+	table, err := ParseRollableTable(*bufio.NewScanner(strings.NewReader("| foo | bar |\n|---|---|\n| 1-3 | A |\n| 4-6 | B |")), "mdtable")
 	assert.NoError(t, err)
 	assert.Equal(t, map[int]string{1: " A ", 2: "1", 3: "1", 4: " B ", 5: "4", 6: "4"}, table.table)
 	assert.Equal(t, 6, table.max)
 }
 
 func Test_ParseRollableTable_table_withoutRanges(t *testing.T) {
-	table, err := ParseRollableTable(*bufio.NewScanner(strings.NewReader("| foo | bar |\n|---|---|\n| 1 | A |\n| 2 | B |\n| 3 | C |")))
+	table, err := ParseRollableTable(*bufio.NewScanner(strings.NewReader("| foo | bar |\n|---|---|\n| 1 | A |\n| 2 | B |\n| 3 | C |")), "noranges")
 	assert.NoError(t, err)
 	assert.Equal(t, map[int]string{1: " A ", 2: " B ", 3: " C "}, table.table)
 	assert.Equal(t, 3, table.max)
 }
 
 func Test_ParseRollableTable_complexTable(t *testing.T) {
-	table, err := ParseRollableTable(*bufio.NewScanner(strings.NewReader("| 2d6 | options |\n|---|---|\n| 2 | foo |\n| 3-7 | bar |\n| 8 | baz |\n| 9-12 | bing |")))
+	table, err := ParseRollableTable(*bufio.NewScanner(strings.NewReader("| 2d6 | options |\n|---|---|\n| 2 | foo |\n| 3-7 | bar |\n| 8 | baz |\n| 9-12 | bing |")), "complextable")
 	assert.NoError(t, err)
 	assert.Equal(t, map[int]string{2: " foo ", 3: " bar ", 4: "3", 5: "3", 6: "3", 7: "3", 8: " baz ", 9: " bing ", 10: "9", 11: "9", 12: "9"}, table.table)
 	assert.Equal(t, 12, table.max)
@@ -132,7 +132,7 @@ func Test_ParseRollableTable_complexTable(t *testing.T) {
 
 func Test_parseDiceFromMDTable(t *testing.T) {
 	table := MDTable{{" 2d20 ", " result "}, {"---", "---"}, {" 1-3 ", " A "}, {" 4-6 ", " B "}, {" 7-20 ", " C "}}
-	rollableTable, err := fromMDTable(table)
+	rollableTable, err := fromMDTable(table, "2d20table")
 	assert.Nil(t, err)
 	assert.NotNil(t, rollableTable.dice)
 	assert.Equal(t, 2, rollableTable.dice.count)
@@ -141,14 +141,14 @@ func Test_parseDiceFromMDTable(t *testing.T) {
 }
 
 func Test_Roll(t *testing.T) {
-	table := RollableTable{map[int]string{1: "foo", 2: "bar", 3: "baz"}, 3, Dice{1, 3, AdditionInterpreter{}}}
+	table := RollableTable{"RollIt", map[int]string{1: "foo", 2: "bar", 3: "baz"}, 3, Dice{1, 3, AdditionInterpreter{}}}
 	match, err := regexp.Match(`foo|bar|baz`, []byte(table.Roll()))
 	assert.NoError(t, err)
 	assert.True(t, match)
 }
 
 func Test_Roll_WithDice1d3(t *testing.T) {
-	table := RollableTable{map[int]string{1: "foo", 2: "bar", 3: "baz", 4: "bing", 5: "bong"}, 5, Dice{
+	table := RollableTable{"Roll1d3", map[int]string{1: "foo", 2: "bar", 3: "baz", 4: "bing", 5: "bong"}, 5, Dice{
 		count:           1,
 		sides:           3,
 		DiceInterpreter: AdditionInterpreter{},
@@ -159,7 +159,7 @@ func Test_Roll_WithDice1d3(t *testing.T) {
 }
 
 func Test_Roll_WithDice2d2(t *testing.T) {
-	table := RollableTable{map[int]string{1: "foo", 2: "bar", 3: "baz", 4: "bing", 5: "bong"}, 3, Dice{
+	table := RollableTable{"2d2table", map[int]string{1: "foo", 2: "bar", 3: "baz", 4: "bing", 5: "bong"}, 3, Dice{
 		count:           2,
 		sides:           2,
 		DiceInterpreter: AdditionInterpreter{},

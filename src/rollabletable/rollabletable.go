@@ -15,6 +15,7 @@ var (
 )
 
 type RollableTable struct {
+	Name  string
 	table map[int]string
 	max   int
 	dice  Dice
@@ -38,7 +39,7 @@ func (rt RollableTable) AsMDTable() string {
 	return table.String()
 }
 
-func ParseRollableTable(scanner bufio.Scanner) (RollableTable, error) {
+func ParseRollableTable(scanner bufio.Scanner, name string) (RollableTable, error) {
 	var doc []string
 	for i := 0; i < 5; i++ { // Only check first couple lines before moving on
 		scanner.Scan()
@@ -48,19 +49,20 @@ func ParseRollableTable(scanner bufio.Scanner) (RollableTable, error) {
 			for scanner.Scan() {
 				doc = append(doc, scanner.Text())
 			}
-			return fromMDList(parseMDList(doc)), nil
+			return fromMDList(parseMDList(doc), name), nil
 		case isRollableMDTable(scanner.Text()):
 			for scanner.Scan() {
 				doc = append(doc, scanner.Text())
 			}
-			return fromMDTable(parseMDTable(doc))
+			return fromMDTable(parseMDTable(doc), name)
 		}
 	}
 	return RollableTable{}, fmt.Errorf("Not a Rollable Table")
 }
 
-func fromMDList(list MDList) RollableTable {
+func fromMDList(list MDList, name string) RollableTable {
 	var rollableTable RollableTable
+	rollableTable.Name = name
 	rollableTable.table = make(map[int]string)
 	rollableTable.max = len(list)
 	rollableTable.dice = Dice{
@@ -75,8 +77,9 @@ func fromMDList(list MDList) RollableTable {
 	return rollableTable
 }
 
-func fromMDTable(table MDTable) (RollableTable, error) {
+func fromMDTable(table MDTable, name string) (RollableTable, error) {
 	var rollableTable RollableTable
+	rollableTable.Name = name
 	rollableTable.table = make(map[int]string)
 	for _, row := range table {
 		minRange, maxRange, value, ok := parseMDTableRow(row)

@@ -8,14 +8,14 @@ import (
 )
 
 func Test_standardizeSearch(t *testing.T) {
-	assert.Equal(t, "testtable.md", standardizeSearch("TestTable"))
+	assert.Equal(t, "testtable", standardizeSearch("TestTable"))
 	assert.Equal(t, "testtable.md", standardizeSearch("TestTable.md"))
-	assert.Equal(t, "testtable.md", standardizeSearch("testtable"))
+	assert.Equal(t, "testtable", standardizeSearch("testtable"))
 	assert.Equal(t, "testtable.md", standardizeSearch("testtable.md"))
-	assert.Equal(t, "testtable.md", standardizeSearch("./testtable"))
-	assert.Equal(t, "testtable.md", standardizeSearch(".\\testtable"))
+	assert.Equal(t, "testtable", standardizeSearch("./testtable"))
+	assert.Equal(t, "testtable", standardizeSearch(".\\testtable"))
 	assert.Equal(t, filepath.FromSlash("test/testtable.md"), standardizeSearch("Test/TestTable.md"))
-	assert.Equal(t, filepath.FromSlash("test/testtable.md"), standardizeSearch("Test/TestTable"))
+	assert.Equal(t, filepath.FromSlash("test/testtable"), standardizeSearch("Test/TestTable"))
 }
 
 func Test_parseArgs(t *testing.T) {
@@ -32,19 +32,19 @@ func Test_parseArgs_noQuery(t *testing.T) {
 func Test_findFiles(t *testing.T) {
 	path, err := findTable("testtable.md", "Test")
 	assert.NoError(t, err)
-	assert.Equal(t, filepath.FromSlash("Test/TestTable.md"), path)
+	assert.Equal(t, []string{filepath.FromSlash("Test/TestTable.md"), filepath.FromSlash("Test/testdir/SubTestTable.md")}, path)
 }
 
 func Test_findFiles_subDir(t *testing.T) {
 	path, err := findTable("subtesttable.md", "Test")
 	assert.NoError(t, err)
-	assert.Equal(t, filepath.FromSlash("Test/testdir/SubTestTable.md"), path)
+	assert.Equal(t, []string{filepath.FromSlash("Test/testdir/SubTestTable.md")}, path)
 }
 
 func Test_findFiles_specifyPath(t *testing.T) {
 	path, err := findTable(filepath.FromSlash("testdir/subtesttable.md"), "Test")
 	assert.NoError(t, err)
-	assert.Equal(t, filepath.FromSlash("Test/testdir/SubTestTable.md"), path)
+	assert.Equal(t, []string{filepath.FromSlash("Test/testdir/SubTestTable.md")}, path)
 }
 
 func Test_findFiles_BadName(t *testing.T) {

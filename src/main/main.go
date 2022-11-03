@@ -26,19 +26,30 @@ func main() {
 	query, err := parseArgs(args)
 	checkError(err, "Bad command argument")
 
-	rollTable := createRollableTable(query)
+	rollTables := createRollableTables(query)
 
 	rand.Seed(time.Now().UnixNano())
 
+	var results []string
+	for _, table := range rollTables {
+		result := rollOnTable(table)
+		results = append(results, src.Colorize(src.Green, table.Name+": ")+result)
+	}
+
+	for _, result := range results {
+		fmt.Println(result)
+	}
+}
+
+func rollOnTable(rollTable rollabletable.RollableTable) string {
 	result := rollTable.Roll()
 	for len(linkMatcher.FindStringSubmatch(result)) != 0 {
 		link := getLinkFromResult(result)
-		subTable := createRollableTable(link[1])
-		subResult := subTable.Roll()
+		subTable := createRollableTables(link[1])
+		subResult := subTable[0].Roll()
 		result = strings.Replace(result, link[0], subResult, 1)
 	}
-	fmt.Println(result)
-
+	return result
 }
 
 func getLinkFromResult(result string) []string {
@@ -46,20 +57,34 @@ func getLinkFromResult(result string) []string {
 	return query
 }
 
-func createRollableTable(query string) rollabletable.RollableTable {
+func createRollableTables(query string) (rollTables []rollabletable.RollableTable) {
 	query = standardizeSearch(query)
-
-	path, err := findTable(query, ".")
+	paths, err := findTable(query, ".")
 	checkError(err, "Error finding file")
+
+	for _, path := range paths {
+		table, err := rollableTableFromPath(path)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		rollTables = append(rollTables, table)
+	}
+	return rollTables
+}
+
+func rollableTableFromPath(path string) (rollabletable.RollableTable, error) {
+
 	file, err := os.Open(path)
 	checkError(err, "Error reading file")
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
-	rollTable, err := rollabletable.ParseRollableTable(*scanner)
-	checkError(err, "Error parsing table")
-
-	return rollTable
+	rollTable, err := rollabletable.ParseRollableTable(*scanner, path)
+	if err != nil {
+		return rollabletable.RollableTable{}, fmt.Errorf("Error parsing table: %s, %v", path, err)
+	}
+	return rollTable, nil
 }
 
 func parseArgs(args []string) (query string, err error) {
@@ -114,32 +139,29 @@ func standardizeSearch(search string) string {
 	search = strings.TrimPrefix(search, ".\\")
 	search = filepath.FromSlash(search)
 	search = strings.ToLower(search)
-	if !strings.HasSuffix(search, ".md") {
-		search = search + ".md"
-	}
+
 	return search
 }
 
-func findTable(search string, dir string) (tablePath string, err error) {
+func findTable(search string, dir string) (paths []string, err error) {
 	if search == "" {
-		return "", fmt.Errorf("Please provide a table name. Search: %s, Directory: %s", search, dir)
+		return []string{}, fmt.Errorf("Please provide a table name. Search: %s, Directory: %s", search, dir)
 	}
 
 	err = filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
-		checkError(err, "hereIAM")
-		if tablePath != "" {
+		checkError(err, "Error while walking directory")
+		if d.IsDir() {
 			return nil
 		}
-		if strings.EqualFold(path, search) || strings.Contains(strings.ToLower(path), fmt.Sprintf("%c%s", os.PathSeparator, search)) {
-			tablePath = path
-			return nil
+		if strings.Contains(strings.ToLower(path), strings.ToLower(search)) {
+			paths = append(paths, path)
 		}
 		return nil
 	})
-	if tablePath == "" {
-		return "", fmt.Errorf("Table not found: %s", search)
+	if len(paths) == 0 {
+		return []string{}, fmt.Errorf("Table not found: %s", search)
 	}
-	return tablePath, err
+	return paths, err
 }
 
 func checkError(err error, msg string) {
