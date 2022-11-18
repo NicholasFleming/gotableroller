@@ -18,6 +18,11 @@ var (
 	rowRangePattern  = regexp.MustCompile(`(\d+).(\d+)`)      // matches roll ranges like '5-12' and captures the numbers as groups
 	markdownListItem = regexp.MustCompile(`^(\d+\. |\* )`)    // identifies a line as a markdown list item, ie. '1. ' or '* '
 	linkMatcher      = regexp.MustCompile(`\[.+?\]\((.+?)\)`) // matches markdown links like '[Link Label](path/to/table)' with a group for 'path/to/table'
+
+	usageText = "Usage: gotableroller {TableName}\nTableName: the name of the markdown file containing the table. " +
+		"This file must exist the same directory or a subdirectory of gotableroller. TableName may/maynot contain" +
+		"the '.md' extension. It may contain path components as while. Examples: 'Weapons', 'weapons', 'weapons.md', " +
+		"'Items/Weapons.md'"
 )
 
 func main() {
@@ -95,43 +100,43 @@ func parseArgs(args []string) (query string, err error) {
 
 	// TODO use flags
 	if contains([]string{"-h", "--h", "-help", "--help", "\\h", "\\help"}, args[1]) {
-		printUsageAndExit()
+		fmt.Println(usageText)
+		os.Exit(0)
 	}
 
 	if contains([]string{"-ls", "--ls", "-list", "--list", "\\ls", "\\list"}, args[1]) {
 		if len(args) > 2 {
 			query = args[2]
 		}
-		printAvailableTablesAndExit(query)
+		output := printDirectoryOutput(".", 0, query)
+		fmt.Println(output)
+		os.Exit(0)
 	}
 
 	return args[1], nil
 }
 
-func printAvailableTablesAndExit(query string) {
-	printDirectory(".", 0, query)
-	os.Exit(0)
-}
-
-func printDirectory(dir string, depth int, query string) {
+func printDirectoryOutput(dir string, depth int, query string) string {
 	files, err := os.ReadDir(dir)
 	checkError(err, "Error reading directory")
 	var directories []os.DirEntry
-
+	buffer := strings.Builder{}
 	for _, file := range files {
 		if file.IsDir() && !strings.HasPrefix(file.Name(), ".") {
 			directories = append(directories, file)
 		} else if strings.HasSuffix(file.Name(), ".md") {
 			if strings.Contains(strings.ToLower(file.Name()), query) {
-				fmt.Println(src.Colorize(src.Yellow, strings.Repeat("-", depth)+file.Name()))
+				buffer.WriteString(src.Colorize(src.Yellow, strings.Repeat("-", depth)+file.Name()+"\n"))
 			}
 		}
 	}
 
 	for _, subDir := range directories {
-		fmt.Println(src.Colorize(src.Purple, strings.Repeat("-", depth)+dir+string(filepath.Separator)+subDir.Name()))
-		printDirectory(dir+string(filepath.Separator)+subDir.Name(), depth+1, query)
+		buffer.WriteString(src.Colorize(src.Purple, strings.Repeat("-", depth)+dir+string(filepath.Separator)+subDir.Name()+"\n"))
+		buffer.WriteString(printDirectoryOutput(dir+string(filepath.Separator)+subDir.Name(), depth+1, query))
 	}
+
+	return buffer.String()
 }
 
 func standardizeSearch(search string) string {
@@ -170,14 +175,6 @@ func checkError(err error, msg string) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-}
-
-func printUsageAndExit() {
-	fmt.Println("Usage: gotableroller {TableName}\nTableName: the name of the markdown file containing the table. " +
-		"This file must exist the same directory or a subdirectory of gotableroller. TableName may/maynot contain" +
-		"the '.md' extension. It may contain path components as while. Examples: 'Weapons', 'weapons', 'weapons.md', " +
-		"'Items/Weapons.md'")
-	os.Exit(0)
 }
 
 func contains[T comparable](ts []T, t T) bool {

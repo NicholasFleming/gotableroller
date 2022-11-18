@@ -57,22 +57,6 @@ func (d Dice) Roll() int {
 
 type DieResult []int
 
-func (d DieResult) StandardInterpretation() int {
-	sum := 0
-	for _, v := range d {
-		sum += v
-	}
-	return sum
-}
-
-func (d DieResult) DigitsInterpretation() int {
-	sum := 0
-	for i, v := range d {
-		sum += v * (10 ^ i)
-	}
-	return sum
-}
-
 func parseDiceFromString(s string) (Dice, bool) {
 	if digitsDiePattern.MatchString(s) {
 		sides, err := strconv.Atoi(strings.Split(strings.Split(s, "d")[1], "")[0])

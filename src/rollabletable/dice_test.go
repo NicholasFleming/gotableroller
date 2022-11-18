@@ -54,3 +54,15 @@ func Test_diceFromString_digitDie(t *testing.T) {
 	assert.Equal(t, 6, die.sides)
 	assert.IsType(t, DigitsInterpreter{}, die.DiceInterpreter)
 }
+
+func Test_AdditionInterpreter(t *testing.T) {
+	var ai AdditionInterpreter
+	dieResult := DieResult{1, 2, 3}
+	assert.Equal(t, 6, ai.interpret(dieResult))
+}
+
+func Test_DigitsInterpreter(t *testing.T) {
+	var ai DigitsInterpreter
+	dieResult := DieResult{1, 2, 3}
+	assert.Equal(t, 123, ai.interpret(dieResult))
+}

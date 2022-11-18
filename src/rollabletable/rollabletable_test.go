@@ -107,6 +107,13 @@ func Test_fromMDList(t *testing.T) {
 	assert.Equal(t, 3, rollableTable.max)
 }
 
+func Test_ParseRollableTable_list(t *testing.T) {
+	table, err := ParseRollableTable(*bufio.NewScanner(strings.NewReader("* foo\n* bar\n* baz\n")), "mdtable")
+	assert.NoError(t, err)
+	assert.Equal(t, map[int]string{1: "foo", 2: "bar", 3: "baz"}, table.table)
+	assert.Equal(t, 3, table.max)
+}
+
 func Test_ParseRollableTable_table_withRanges(t *testing.T) {
 	table, err := ParseRollableTable(*bufio.NewScanner(strings.NewReader("| foo | bar |\n|---|---|\n| 1-3 | A |\n| 4-6 | B |")), "mdtable")
 	assert.NoError(t, err)
