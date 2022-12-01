@@ -25,6 +25,9 @@ var (
 		"'Items/Weapons.md'"
 )
 
+// TODO
+// terminal coloring doesnt work on windows
+
 func main() {
 	args := os.Args
 

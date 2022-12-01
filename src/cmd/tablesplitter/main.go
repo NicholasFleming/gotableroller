@@ -4,14 +4,22 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path"
 	"strings"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+)
+
+var (
+	caser = cases.Title(language.English)
 )
 
 func main() {
 	file, err := os.Open("DreadTable.md")
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error Opening DreadTable: " + err.Error())
 		os.Exit(-1)
 	}
 
@@ -30,22 +38,33 @@ func main() {
 		case strings.EqualFold(line, ""):
 			continue
 		case strings.HasPrefix(line, "###"):
-			writeTable(h1, h2, h3, output)
+			fmt.Println(line)
+			if len(output) > 0 {
+				writeTable(h1, h2, h3, output)
+			}
 			output = []string{}
-			h3 = strings.TrimPrefix(line, "###")
+			h3 = strings.TrimSpace(strings.TrimPrefix(line, "###"))
 		case strings.HasPrefix(line, "##"):
-			writeTable(h1, h2, h3, output)
+			fmt.Println(line)
+			if len(output) > 0 {
+				writeTable(h1, h2, h3, output)
+			}
 			output = []string{}
-			h2 = strings.TrimPrefix(line, "##")
+			h3 = ""
+			h2 = strings.TrimSpace(strings.TrimPrefix(line, "##"))
 		case strings.HasPrefix(line, "#"):
-			err := os.Mkdir("/"+h1, 0777)
+			fmt.Println(line)
+			if len(output) > 0 {
+				writeTable(h1, h2, h3, output)
+			}
+			output = []string{}
+			h2, h3 = "", ""
+			h1 = strings.TrimSpace(strings.TrimPrefix(line, "#"))
+			err := os.Mkdir(sanitizeFileName("./"+h1), 0777)
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println("Error making directory: " + err.Error())
 				os.Exit(-1)
 			}
-			writeTable(h1, h2, h3, output)
-			output = []string{}
-			h1 = strings.TrimPrefix(line, "#")
 		default:
 			output = append(output, line)
 		}
@@ -64,6 +83,22 @@ func writeTable(h1 string, h2 string, h3 string, output []string) {
 		if h3 != "" {
 			name = name + " - " + h3
 		}
-		os.WriteFile(name, []byte(strings.Join(output, "\n")), 0777)
+		err := os.WriteFile(sanitizeFileName(name), []byte(strings.Join(output, "\n")), 0777)
+		if err != nil {
+			fmt.Println("Error writing file: " + err.Error())
+			os.Exit(-1)
+		}
 	}
+}
+
+func sanitizeFileName(name string) string {
+	name = strings.ReplaceAll(name, "?", "")
+	name = strings.ReplaceAll(name, "'", "")
+	name = strings.ReplaceAll(name, ":", "-")
+	name = strings.ReplaceAll(name, "\"", "")
+	name = strings.ReplaceAll(name, "&", "")
+	name = strings.ReplaceAll(name, ",", "")
+	name = strings.ReplaceAll(name, "  ", " ")
+
+	return path.Clean(caser.String(name))
 }
