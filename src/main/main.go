@@ -15,11 +15,14 @@ import (
 )
 
 var (
-	rowRangePattern  = regexp.MustCompile(`(\d+).(\d+)`)      // matches roll ranges like '5-12' and captures the numbers as groups
-	markdownListItem = regexp.MustCompile(`^(\d+\. |\* )`)    // identifies a line as a markdown list item, ie. '1. ' or '* '
-	linkMatcher      = regexp.MustCompile(`\[.+?\]\((.+?)\)`) // matches markdown links like '[Link Label](path/to/table)' with a group for 'path/to/table'
+	rowRangePattern  = regexp.MustCompile(`(\d+).(\d+)`)   // matches roll ranges like '5-12' and captures the numbers as groups
+	markdownListItem = regexp.MustCompile(`^(\d+\. |\* )`) // identifies a line as a markdown list item, ie. '1. ' or '* '
 
-	usageText = "Usage: gotableroller {TableName}\nTableName: the name of the markdown file containing the table. " +
+	// Matches markdown links like '[Link Label](path/to/table)' with a group for 'path/to/table' or
+	// Internal links like '[[path/to/table]]' with a group for 'path/to/table'
+	// Group 1: Either '[foo](' or '[['; Group 2: The path to the table; Group 3: Either ')' or '|foo]]' or ']]'
+	linkMatcher = regexp.MustCompile(`(\[.+?\]\(|\[\[)(.+?)(\)|\|.+?\]\]|\]\])`)
+	usageText   = "Usage: gotableroller {TableName}\nTableName: the name of the markdown file containing the table. " +
 		"This file must exist the same directory or a subdirectory of gotableroller. TableName may/maynot contain" +
 		"the '.md' extension. It may contain path components as while. Examples: 'Weapons', 'weapons', 'weapons.md', " +
 		"'Items/Weapons.md'"
@@ -53,16 +56,24 @@ func rollOnTable(rollTable rollabletable.RollableTable) string {
 	result := rollTable.Roll()
 	for len(linkMatcher.FindStringSubmatch(result)) != 0 {
 		link := getLinkFromResult(result)
-		subTable := createRollableTables(link[1])
+		subTable := createRollableTables(link.pathToTable)
 		subResult := subTable[0].Roll()
-		result = strings.Replace(result, link[0], subResult, 1)
+		result = strings.Replace(result, link.originalLink, subResult, 1)
 	}
 	return result
 }
 
-func getLinkFromResult(result string) []string {
+type TableLink struct {
+	originalLink string
+	pathToTable  string
+}
+
+func getLinkFromResult(result string) TableLink {
 	query := linkMatcher.FindStringSubmatch(result)
-	return query
+	return TableLink{
+		originalLink: query[0],
+		pathToTable:  query[2],
+	}
 }
 
 func createRollableTables(query string) (rollTables []rollabletable.RollableTable) {

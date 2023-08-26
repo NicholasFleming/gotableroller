@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	rowRangePattern  = regexp.MustCompile(`(\d+)[-|–](\d+)`) // matches roll ranges like '5-12' and captures the numbers as groups
-	markdownListItem = regexp.MustCompile(`^(\d+\. |\* )`)   // identifies a line as a markdown list item, ie. '1. ' or '* '
+	rowRangePattern  = regexp.MustCompile(`(\d+)[-|–](\d+)`)     // matches roll ranges like '5-12' and captures the numbers as groups
+	markdownListItem = regexp.MustCompile(`^(\d+\. |\* |- |– )`) // identifies a line as a markdown list item, ie. '1. ' or '* '
 )
 
 type RollableTable struct {
@@ -161,10 +161,22 @@ func isRollableMDList(s string) bool {
 
 func parseMDList(contents []string) MDList {
 	var mdList MDList
+	entry := ""
 	for _, line := range contents {
 		if markdownListItem.Match([]byte(line)) {
-			mdList = append(mdList, markdownListItem.ReplaceAllString(line, ""))
+			if entry != "" {
+				mdList = append(mdList, entry)
+				entry = ""
+			}
+			entry += markdownListItem.ReplaceAllString(line, "")
+		} else {
+			if line != "" {
+				entry += "\n" + markdownListItem.ReplaceAllString(line, "")
+			}
 		}
+	}
+	if entry != "" {
+		mdList = append(mdList, entry)
 	}
 	return mdList
 }

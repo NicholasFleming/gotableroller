@@ -66,9 +66,12 @@ func Test_findFiles_EmptyName(t *testing.T) {
 
 func Test_getLinkFromResult(t *testing.T) {
 	link := getLinkFromResult("foo [text label](path/to/file) bar")
-	assert.Len(t, link, 2)
-	assert.Equal(t, "[text label](path/to/file)", link[0])
-	assert.Equal(t, "path/to/file", link[1])
+	assert.Equal(t, "[text label](path/to/file)", link.originalLink)
+	assert.Equal(t, "path/to/file", link.pathToTable)
+
+	internalLink := getLinkFromResult("foo [[path/to/file]] bar")
+	assert.Equal(t, "[[path/to/file]]", internalLink.originalLink)
+	assert.Equal(t, "path/to/file", internalLink.pathToTable)
 }
 
 func Test_rollOnTable(t *testing.T) {

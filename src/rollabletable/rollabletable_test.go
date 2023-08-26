@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 	"testing"
 
@@ -12,14 +11,6 @@ import (
 )
 
 var foo string = "foo"
-
-func TestMain(m *testing.M) {
-	for i := 1; i < 100; i++ {
-		foo = "Run number " + strconv.Itoa(i)
-		m.Run()
-
-	}
-}
 
 func Test_isRollableMDList(t *testing.T) {
 	fmt.Println("Foo: " + foo)
@@ -29,6 +20,8 @@ func Test_isRollableMDList(t *testing.T) {
 	assert.False(t, isRollableMDList("1 foo"))
 	assert.False(t, isRollableMDList(""))
 	assert.False(t, isRollableMDList("| foo | bar |"))
+	assert.True(t, isRollableMDList("- foo")) //endash
+	assert.True(t, isRollableMDList("– foo")) //emdash
 }
 
 func Test_parseRollableMDList_unordered(t *testing.T) {
@@ -43,11 +36,14 @@ func Test_parseRollableMDList_ordered(t *testing.T) {
 	assert.Equal(t, MDList{"foo", "bar", "baz"}, list)
 }
 
-func Test_parseRollableMDList_badFormat(t *testing.T) {
-	s := []string{"- foo", "2 bar", "baz"}
+func Test_parseRollableMDList_withNewLines(t *testing.T) {
+	s := []string{"* foo", "bar", "* baz"}
 	list := parseMDList(s)
-	var emptyList MDList
-	assert.Equal(t, emptyList, list)
+	expected := MDList([]string{
+		"foo\nbar",
+		"baz",
+	})
+	assert.Equal(t, expected, list)
 }
 
 func Test_isRollableMDTable(t *testing.T) {
